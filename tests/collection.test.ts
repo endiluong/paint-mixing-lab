@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto'
 import { IDBFactory } from 'fake-indexeddb'
 import { readFileSync } from 'node:fs'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { RANGE_TAGS } from '@/components/PaintLabel'
+import { OWNED_GREEN, RANGE_TAGS } from '@/components/PaintLabel'
 import { findOwnedCandidate, type RefPaint } from '@/lib/buyCheck'
 import { buildCatalog, searchCatalog } from '@/lib/catalog'
 import { createPaint, editPaint, findTwin, patchPaint, problemWith, resetPaint, toFields } from '@/lib/collection'
@@ -220,6 +220,6 @@ describe('text on color', () => {
     const lum = (hex: string): number => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)).reduce((s, v, i) => s + v * [0.2126, 0.7152, 0.0722][i], 0)
     const ratio = (a: string, b: string): number => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05)
     expect(Math.min(...[...paints, ...library].flatMap((p) => (p.hex ? [ratio(p.hex, inkOn(p.hex))] : [])))).toBeGreaterThanOrEqual(4.5)
-    expect(Object.values(RANGE_TAGS).filter((t) => ratio(t.color, '#FFFFFF') < 4.5)).toEqual([])
+    expect([OWNED_GREEN, ...Object.values(RANGE_TAGS).map((t) => t.color)].filter((c) => ratio(c, '#FFFFFF') < 4.5)).toEqual([])
   })
 })

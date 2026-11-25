@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { ChevronDown, ChevronUp, Pencil, Plus, Trash2 } from 'lucide-react'
 import { applyFilter, EMPTY_FILTER, Filters, type FilterState } from '@/components/Filters'
-import { OwnedMark, PaintLabel, RangeTag } from '@/components/PaintLabel'
+import { OwnedTag, PaintLabel, RangeTag } from '@/components/PaintLabel'
 import { Segmented } from '@/components/Segmented'
 import { usePersisted } from '@/hooks/usePersisted'
 import { loadLibrary, notOwned } from '@/lib/library'
@@ -232,7 +232,6 @@ export const MixerTab = ({ paints: mine, collection, mixItems, setMixItems, prob
           <Filters paints={paints} value={filter} onChange={changeFilter} />
           <div className="mt-2 flex items-center gap-2 text-sm text-dim">
             <span className="tnum">{shown.length.toLocaleString('en')} {shown.length === 1 ? 'paint' : 'paints'}</span>
-            <span className="ml-2 inline-flex items-center gap-1.5"><OwnedMark ink="#f0f0f0" paper="#111111" /><span aria-hidden>In your paints</span></span>
             <button type="button" className="btn ml-auto text-text" onClick={create}><Plus size={15} />Add a paint</button>
           </div>
           {scope === 'all' && libraryState === 'failed' && <p role="alert" className="mt-2 text-sm">The other paints did not load. Reload the page to try again.</p>}
@@ -256,7 +255,7 @@ export const MixerTab = ({ paints: mine, collection, mixItems, setMixItems, prob
               <span className="h-10 w-10 shrink-0 rounded-[8px] ring-1 ring-inset ring-white/20" style={{ background: chosen.hex }} />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold">{chosen.name} <span className="font-code">{chosen.code}</span></p>
-                <p className="mt-0.5 flex min-w-0 items-center gap-2 text-sm text-dim"><RangeTag brand={chosen.brand} line={chosen.line} /><span className="truncate"><span className="tnum">{chosen.hex}</span>, {chosen.owned ? 'in your paints' : 'not in your paints'}</span></p>
+                <p className="mt-0.5 flex min-w-0 items-center gap-2 text-sm text-dim"><RangeTag brand={chosen.brand} line={chosen.line} /><span className="tnum">{chosen.hex}</span>{chosen.owned ? <OwnedTag /> : <span className="truncate">Not owned</span>}</p>
               </div>
             </div>
             <div className="mt-2 flex flex-wrap gap-2">

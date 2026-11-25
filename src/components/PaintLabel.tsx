@@ -4,11 +4,13 @@ import { paintBackground } from '@/lib/color'
 import type { MetalSwatch, Paint } from '@/lib/types'
 import { brandChoice } from './Filters'
 
-/** Round check mark: the paint is in the user's collection. */
-export const OwnedMark = ({ ink = '#161616', paper = '#ece8df' }: { ink?: string; paper?: string }) => (
-  <span className="relative inline-flex h-4 w-4 shrink-0 items-center justify-center self-center rounded-full" style={{ background: ink, color: paper }}>
+export const OWNED_GREEN = '#1B7A3D'
+
+/** Green pill: the paint is in the user's collection. */
+export const OwnedTag = () => (
+  <span className="inline-flex shrink-0 items-center gap-1 self-center rounded-[8px] px-1.5 py-0.5 text-xs font-semibold text-white" style={{ background: OWNED_GREEN }}>
     <Check size={12} strokeWidth={3.5} aria-hidden />
-    <span className="sr-only">In your paints. </span>
+    Owned
   </span>
 )
 
@@ -52,7 +54,7 @@ export const PaintLabel = ({ hex, metal, code, name, brand, line, owned, selecte
         <span className="flex items-baseline gap-2">
           <span className="min-w-0 truncate">{name}</span>
           {code && <span className="font-code shrink-0 text-[15px] font-bold">{code}</span>}
-          {owned && <OwnedMark />}
+          {owned && <OwnedTag />}
         </span>
         <span className="mt-0.5 flex min-w-0 items-center gap-2">
           <RangeTag brand={brand} line={line} />

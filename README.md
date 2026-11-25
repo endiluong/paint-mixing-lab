@@ -14,7 +14,7 @@ npm run build    # production build in dist/
 
 ## Tabs
 
-- **Mixer**: 60/40 screen. Left is the color graph (3D sphere or 2D wheel) with the bench below it. Right is the list of paints in the graph, filtered by color group, type and brand. A toggle switches between the paints you own and every normal paint in the library (Vallejo with Squidmar Color, AK, Citadel, Scale75). A pill tags the range (V GameColor, V Color, V Squidmar, AK, Scale75, Citadel); a check mark means the paint is in your paints. Select a paint to edit, remove or add it.
+- **Mixer**: 60/40 screen. Left is the color graph (3D sphere or 2D wheel) with the bench below it. Right is the list of paints in the graph, filtered by color group, type and brand. A toggle switches between the paints you own and every normal paint in the library (Vallejo with Squidmar Color, AK, Citadel, Scale75). A pill tags the range (V GameColor, V Color, V Squidmar, AK, Scale75, Citadel); a green Owned pill means the paint is in your paints. Select a paint to edit, remove or add it.
   - *Mix*: 2, 3 or 4 paints in parts, with test swatches for common ratios.
   - *Layer*: a base coat and up to six coats, each with its own opacity.
   - *Match a color*: the closest paints you own and the best 2 or 3 paint mixes for a target.
