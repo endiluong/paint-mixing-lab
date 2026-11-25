@@ -1,5 +1,7 @@
 # Paint Mixing Lab
 
+Live: https://endiluong.github.io/paint-mixing-lab/
+
 Color mixing for the paints you own. Built from a 193-paint inventory read from bottle labels.
 
 ## Run
@@ -35,7 +37,7 @@ A hex does not contain a paint's pigments, so results are estimates. Test on rea
 
 | File | Content |
 |---|---|
-| `src/data/paints.json` | Inventory, with hex from [miniature-paints](https://github.com/Arcturus5404/miniature-paints) (MIT, (c) 2022 Rick Fleuren) and Hobby-Paints-Wiki |
+| `src/data/paints.json` | Inventory, with hex from [miniature-paints](https://github.com/Arcturus5404/miniature-paints) (MIT, (c) 2022 Rick Fleuren, see THIRD_PARTY_NOTICES.md) and Hobby-Paints-Wiki |
 | `src/data/paintpad-hex.json` | Preferred hex values from [Paint Pad](https://paintpad.app/paints). Not committed: their terms allow viewing only |
 | `public/labels/` | Label photos for cross-checking |
 
