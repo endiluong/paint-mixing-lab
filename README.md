@@ -3,6 +3,8 @@
 
 Color mixing for the paints you own. Starts from a 193-paint inventory read from bottle labels; add, edit and remove paints to make it your own collection.
 
+**Open it:** https://endiluong.github.io/paint-mixing-lab/
+
 ## Run
 
 ```bash
