@@ -1,5 +1,5 @@
 import { isHex } from './color'
-import { STARTER } from './paints'
+import { START_WITH_INVENTORY, STARTER } from './paints'
 import type { Paint, PaintFields, PaintOverride, PaintRecord, StoredPaint } from './types'
 
 /** Types that are ordinary opaque acrylic and join the graph by default. */
@@ -52,7 +52,7 @@ export interface Source {
 
 export const createPaint = (input: PaintFields, source: Source | null): StoredPaint => {
   const f = clean(input)
-  const starter = STARTER.find((p) => codeKey(p.code) === codeKey(f.code) && p.brand === f.brand)
+  const starter = START_WITH_INVENTORY ? STARTER.find((p) => codeKey(p.code) === codeKey(f.code) && p.brand === f.brand) : undefined
   const normal = isNormalType(f.type)
   const addedAt = new Date().toISOString()
   // A built-in paint that was removed comes back with its sources and label photo

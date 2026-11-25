@@ -1,7 +1,7 @@
 # Paint Mixing Lab
 
 
-Color mixing for the paints you own. Starts from a 193-paint inventory read from bottle labels; add, edit and remove paints to make it your own collection.
+Color mixing for the paints you own. The page starts empty: add the paints you own, or restore a backup. `npm run dev` starts from the owner's 193 paints, read from bottle labels.
 
 **Open it:** https://endiluong.github.io/paint-mixing-lab/
 
@@ -23,7 +23,7 @@ npm run build    # production build in dist/
   - *Swatches*: saved tests.
 - **Recipes**: load a recipe page you saved from Paint Pad, or write your own. Shows which paints you own and what to use instead.
 - **Buy check**: paste a shopping list (code, brand, name or hex). Tells you if you own it, if it duplicates a color you have, if you can mix it, or if it fills a gap.
-- **Inventory**: your collection, with hex, hex sources, label photo and details. Add a paint by searching 9,000+ known ones or typing it, edit, remove (with undo), bring back built-in paints, change tint strength and hiding power, export CSV.
+- **Inventory**: your collection, with hex, hex sources, label photo and details. Add a paint by searching 9,000+ known ones or typing it, edit, remove (with undo), change tint strength and hiding power, export CSV, back up and restore.
 
 Only normal acrylics are in the graph. Xpress, metal, ink, fluo, Quick Gen, Special FX and "Intense" paints can be added one by one with "In mixer" in the Inventory.
 
@@ -56,7 +56,9 @@ In IndexedDB (`paint-mixing-lab`) of each user's own browser; nothing is sent to
 
 | Store | Content |
 |---|---|
-| `paints` | The collection, one record per paint. Filled from `src/data/paints.json` on the first visit only, so removed paints stay removed |
+| `paints` | The collection, one record per paint. Empty on the first visit (`npm run dev` fills it once from `src/data/paints.json`) |
 | `state` | Recipes, swatches, wishlist, current mix and layers, view settings |
 
 Data kept in localStorage by older versions is copied over on the first visit.
+
+**Back up** (Inventory) saves everything in one `.json` file. **Restore** replaces the data of a browser with such a file, with undo, so it also moves a collection to another browser or address. Paint Pad hex values are not in the file, so paints that use them show the next source elsewhere.

@@ -269,7 +269,7 @@ export const MixerTab = ({ paints: mine, collection, mixItems, setMixItems, prob
             </li>
           ))}
           {shown.length > listed.length && <li className="w-full"><button type="button" className="btn w-full" onClick={() => setLimit(limit + PAGE * 2)}>Show more, {(shown.length - listed.length).toLocaleString('en')} left</button></li>}
-          {shown.length === 0 && <li className="w-full p-4 text-dim">{paints.length === 0 ? 'No paints yet. Press Add a paint, or bring back the built-in paints in the Inventory.' : `No paint matches these filters. Clear them to see all ${paints.length}.`}</li>}
+          {shown.length === 0 && <li className="w-full p-4 text-dim">{paints.length === 0 ? 'No paints yet. Press Add a paint, or show all paints and bookmark the ones you own.' : `No paint matches these filters. Clear them to see all ${paints.length}.`}</li>}
         </ul>
         {chosen && (
           <div className="sticky bottom-0 border-t border-line bg-panel p-3" aria-label="Selected paint" role="group">

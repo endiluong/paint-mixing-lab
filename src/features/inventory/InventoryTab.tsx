@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react'
-import { Download, Pencil, Plus, RotateCcw, Trash2 } from 'lucide-react'
+import { useMemo, useRef, useState } from 'react'
+import { Download, Pencil, Plus, RotateCcw, Save, Trash2, Upload } from 'lucide-react'
 import { applyFilter, EMPTY_FILTER, Filters, type FilterState } from '@/components/Filters'
 import { RangeTag } from '@/components/PaintLabel'
 import { isHex, paintBackground } from '@/lib/color'
+import { saveFile } from '@/lib/saveFile'
 import type { Paint, PaintOverride } from '@/lib/types'
 
 interface Props {
@@ -15,6 +16,8 @@ interface Props {
   edit: (id: string) => void
   remove: (ids: string[]) => void
   restoreBuiltIn: () => void
+  backUp: () => void
+  openBackup: (file: File) => void
 }
 
 /** OKLab distance above which two references for one paint are worth a look. */
@@ -45,10 +48,11 @@ const csv = (paints: Paint[]): string => {
   return [head, ...paints.map((p) => [p.code, p.name, p.brand, p.line, p.type, p.detail, p.group, p.hex, p.hexSource, p.inMixer, p.strength, p.hiding, p.checked, p.seen])].map((r) => r.map(cell).join(',')).join('\r\n')
 }
 
-export const InventoryTab = ({ paints, missing, change, reset, create, edit, remove, restoreBuiltIn }: Props) => {
+export const InventoryTab = ({ paints, missing, change, reset, create, edit, remove, restoreBuiltIn, backUp, openBackup }: Props) => {
   const [filter, setFilter] = useState<FilterState>({ ...EMPTY_FILTER, sort: 'code' })
   const [only, setOnly] = useState<'all' | 'unchecked' | 'gap' | 'nohex' | 'off'>('all')
   const [open, setOpen] = useState<string | null>(null)
+  const picker = useRef<HTMLInputElement>(null)
   const shown = useMemo(
     () =>
       applyFilter(paints, filter).filter((p) => {
@@ -64,14 +68,7 @@ export const InventoryTab = ({ paints, missing, change, reset, create, edit, rem
   const removeAll = (): void => {
     if (window.confirm(`Remove all ${paints.length} paints from this browser? Paints you typed yourself cannot be brought back later.`)) remove(paints.map((p) => p.id))
   }
-  const download = (): void => {
-    const url = URL.createObjectURL(new Blob(['﻿', csv(shown)], { type: 'text/csv' }))
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'paint-inventory.csv'
-    a.click()
-    URL.revokeObjectURL(url)
-  }
+  const download = (): void => saveFile('paint-inventory.csv', 'text/csv', String.fromCharCode(0xfeff) + csv(shown))
 
   return (
     <div className="flex min-h-0 flex-col lg:h-full">
@@ -87,6 +84,9 @@ export const InventoryTab = ({ paints, missing, change, reset, create, edit, rem
           </select>
           <button type="button" className="btn-main" onClick={create}><Plus size={15} />Add a paint</button>
           <button type="button" className="btn" onClick={download}><Download size={15} />Export CSV</button>
+          <button type="button" className="btn" title="Paints, recipes, swatches, wishlist and settings in one file" onClick={backUp}><Save size={15} />Back up</button>
+          <button type="button" className="btn" title="Load a backup file" onClick={() => picker.current?.click()}><Upload size={15} />Restore</button>
+          <input ref={picker} type="file" accept=".json,application/json" hidden aria-label="Backup file" onChange={(e) => { const f = e.target.files?.[0]; if (f) openBackup(f); e.target.value = '' }} />
           {missing > 0 && <button type="button" className="btn" onClick={restoreBuiltIn}><RotateCcw size={15} />Bring back {missing} built-in</button>}
           {paints.length > 0 && <button type="button" className="btn" onClick={removeAll}><Trash2 size={15} />Remove all</button>}
           <p className="py-1.5 text-sm text-dim tnum">{shown.length} of {paints.length} shown, {checked} checked</p>
@@ -105,7 +105,7 @@ export const InventoryTab = ({ paints, missing, change, reset, create, edit, rem
             ))}
           </tbody>
         </table>
-        {shown.length === 0 && <p className="p-6 text-dim">{paints.length === 0 ? 'No paints yet. Add your first one, or bring back the built-in paints.' : `No paint matches. Clear the filters to see all ${paints.length}.`}</p>}
+        {shown.length === 0 && <p className="p-6 text-dim">{paints.length === 0 ? `No paints yet. Add your first one${missing > 0 ? ', bring back the built-in paints' : ''} or restore a backup.` : `No paint matches. Clear the filters to see all ${paints.length}.`}</p>}
       </div>
     </div>
   )

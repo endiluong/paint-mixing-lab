@@ -4,8 +4,8 @@ import tmmData from '@/data/tmm.json'
 import { hexToLab, isHex, labDistance } from './color'
 import type { MetalSwatch, Paint, PaintOverride, PaintRecord, StoredPaint, UsablePaint } from './types'
 
-/** Optional file: without it every paint falls back to the open dataset. */
-const padFiles = import.meta.glob<Record<string, string>>('@/data/paintpad-hex.json', { eager: true, import: 'default' })
+/** Optional file, for `npm run dev` only, so a built page never ships it. Without it every paint falls back to the open dataset. */
+const padFiles = import.meta.env.DEV ? import.meta.glob<Record<string, string>>('@/data/paintpad-hex.json', { eager: true, import: 'default' }) : {}
 const padHex: Record<string, string> = Object.values(padFiles)[0] ?? {}
 
 export const TMM = tmmData as MetalSwatch[]
@@ -14,7 +14,12 @@ const tmmByCode = new Map(TMM.map((m) => [m.code, m]))
 
 const RECORDS = openData as PaintRecord[]
 
-/** The built-in inventory, written to IndexedDB on the first visit. */
+/**
+ * The owner's inventory. `npm run dev` starts from it; a built page starts empty and uses it only as paint data.
+ */
+export const START_WITH_INVENTORY = import.meta.env.DEV
+
+/** The built-in inventory. */
 export const STARTER: StoredPaint[] = RECORDS.map((r) => ({ ...r, id: r.code, origin: 'starter', hexFrom: null, mine: {}, addedAt: '' }))
 
 export const buildPaint = (record: StoredPaint, owned = true): Paint => {

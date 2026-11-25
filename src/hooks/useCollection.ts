@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { createPaint, editPaint, patchPaint, resetPaint, type Source } from '@/lib/collection'
 import { deletePaints, onOtherTab, putPaints } from '@/lib/db'
-import { buildPaint, STARTER } from '@/lib/paints'
+import { buildPaint, START_WITH_INVENTORY, STARTER } from '@/lib/paints'
 import type { Paint, PaintFields, PaintOverride, StoredPaint } from '@/lib/types'
 
 export interface Collection {
   paints: Paint[]
+  /** The same paints, as stored. */
+  records: StoredPaint[]
   add: (fields: PaintFields, source: Source | null) => string
   edit: (id: string, fields: PaintFields, shownHex: string | null) => void
   patch: (id: string, patch: PaintOverride) => void
@@ -13,7 +15,7 @@ export interface Collection {
   /** Returns the removed records, for undo. */
   remove: (ids: string[]) => StoredPaint[]
   restore: (records: StoredPaint[]) => void
-  /** Built-in paints that are not in the collection now. */
+  /** Built-in paints that are not in the collection now. None on a built page. */
   missing: StoredPaint[]
 }
 
@@ -37,10 +39,12 @@ export const useCollection = (initial: StoredPaint[]): Collection => {
     [byId, put],
   )
 
-  const paints = useMemo(() => [...byId.values()].map((r) => buildPaint(r)), [byId])
-  const missing = useMemo(() => STARTER.filter((s) => !byId.has(s.id)), [byId])
+  const records = useMemo(() => [...byId.values()], [byId])
+  const paints = useMemo(() => records.map((r) => buildPaint(r)), [records])
+  const missing = useMemo(() => (START_WITH_INVENTORY ? STARTER.filter((s) => !byId.has(s.id)) : []), [byId])
   return {
     paints,
+    records,
     missing,
     add: (fields, source) => {
       const made = createPaint(fields, source)

@@ -1,4 +1,5 @@
-import { STARTER } from './paints'
+import type { UserData } from './backup'
+import { START_WITH_INVENTORY, STARTER } from './paints'
 import type { PaintOverride, StoredPaint } from './types'
 
 /**
@@ -12,6 +13,8 @@ const PREFIX = 'pml.'
 const OVERRIDES = 'pml.overrides'
 
 let db: IDBDatabase | null = null
+/** True once the database was opened, even if it was closed later. */
+let kept = false
 const state = new Map<string, unknown>()
 let onError: (message: string) => void = () => {}
 
@@ -45,9 +48,15 @@ const run = <T>(mode: IDBTransactionMode, work: (paints: IDBObjectStore, state: 
     let result: T
     tx.oncomplete = () => resolve(result)
     tx.onabort = () => reject(tx.error ?? new Error('abort'))
-    work(tx.objectStore('paints'), tx.objectStore('state'), (value) => {
-      result = value
-    })
+    try {
+      work(tx.objectStore('paints'), tx.objectStore('state'), (value) => {
+        result = value
+      })
+    } catch (error) {
+      // A record the browser refuses throws here, and the steps before it would still be stored
+      tx.abort()
+      reject(error)
+    }
   })
 
 const write = (work: (paints: IDBObjectStore, state: IDBObjectStore) => void): void => {
@@ -76,6 +85,8 @@ const readOld = (): Map<string, unknown> => {
 
 const firstPaints = (old: Map<string, unknown>): StoredPaint[] => {
   const overrides = (old.get(OVERRIDES) ?? {}) as Record<string, PaintOverride>
+  // Changed paints in the old storage mean that the built-in inventory was in use
+  if (!START_WITH_INVENTORY && Object.keys(overrides).length === 0) return []
   const addedAt = new Date().toISOString()
   return STARTER.map((p) => ({ ...p, mine: overrides[p.id] ?? {}, addedAt }))
 }
@@ -91,6 +102,7 @@ export const boot = async (): Promise<Boot> => {
   const old = readOld()
   try {
     db = await open()
+    kept = true
     db.onversionchange = () => {
       db?.close()
       db = null
@@ -121,6 +133,7 @@ export const boot = async (): Promise<Boot> => {
   } catch {
     db?.close()
     db = null
+    kept = false
     for (const [key, value] of old) state.set(key, value)
     return { paints: firstPaints(old), kept: false }
   }
@@ -137,7 +150,8 @@ const channel = typeof BroadcastChannel === 'undefined' ? null : new BroadcastCh
 
 /** Calls back when another tab of this browser changed the collection. */
 export const onOtherTab = (fn: (paints: StoredPaint[]) => void): (() => void) => {
-  const listen = (): void => {
+  const listen = (e: MessageEvent): void => {
+    if (e.data !== 'paints') return
     run<StoredPaint[]>('readonly', (paints, _, done) => {
       const all = paints.getAll()
       all.onsuccess = () => done(all.result as StoredPaint[])
@@ -148,13 +162,16 @@ export const onOtherTab = (fn: (paints: StoredPaint[]) => void): (() => void) =>
 }
 
 let asked = false
+/** Asks the browser not to clear the collection when the disk is short of space. */
+const askToKeep = (): void => {
+  if (asked) return
+  asked = true
+  void globalThis.navigator?.storage?.persist?.().catch(() => false)
+}
+
 const changed = (work: (paints: IDBObjectStore) => void): void => {
   if (!db) return
-  if (!asked) {
-    asked = true
-    // Ask the browser not to clear the collection when the disk is short of space
-    void globalThis.navigator?.storage?.persist?.().catch(() => false)
-  }
+  askToKeep()
   run<void>('readwrite', work).then(
     () => channel?.postMessage('paints'),
     () => onError('This change was not saved. The browser storage may be full.'),
@@ -163,3 +180,60 @@ const changed = (work: (paints: IDBObjectStore) => void): void => {
 
 export const putPaints = (paints: StoredPaint[]): void => changed((store) => paints.forEach((p) => store.put(p)))
 export const deletePaints = (ids: string[]): void => changed((store) => ids.forEach((id) => store.delete(id)))
+
+const readAll = (): Promise<UserData> =>
+  run<UserData>('readonly', (paintStore, stateStore, done) => {
+    const data: UserData = { paints: [], state: {} }
+    done(data)
+    const all = paintStore.getAll()
+    all.onsuccess = () => {
+      data.paints = all.result as StoredPaint[]
+    }
+    stateStore.openCursor().onsuccess = (e) => {
+      const cursor = (e.target as IDBRequest<IDBCursorWithValue | null>).result
+      if (!cursor) return
+      if (cursor.key !== SEEDED) data.state[String(cursor.key)] = cursor.value
+      cursor.continue()
+    }
+  })
+
+/** Everything the user has, as stored now. `shown` is the collection on screen, used when the browser blocks storage. */
+export const snapshot = async (shown: StoredPaint[]): Promise<UserData> => (db ? readAll() : { paints: shown, state: Object.fromEntries([...state].filter(([key]) => key !== SEEDED)) })
+
+const remember = (data: UserData): void => {
+  state.clear()
+  for (const [key, value] of Object.entries(data.state)) state.set(key, value)
+}
+
+/** Replaces all data in one transaction: if any of it cannot be stored, nothing changes. */
+export const replaceAll = async (data: UserData): Promise<Boot> => {
+  if (kept) {
+    askToKeep()
+    await run<void>('readwrite', (paintStore, stateStore) => {
+      paintStore.clear()
+      stateStore.clear()
+      for (const p of data.paints) paintStore.put(p)
+      for (const [key, value] of Object.entries(data.state)) stateStore.put(value, key)
+      stateStore.put(1, SEEDED)
+    })
+  }
+  remember(data)
+  channel?.postMessage('all')
+  return { paints: data.paints, kept }
+}
+
+/** Calls back when another tab of this browser replaced all data. */
+export const onReplaced = (fn: (boot: Boot) => void): (() => void) => {
+  const listen = (e: MessageEvent): void => {
+    if (e.data !== 'all' || !kept) return
+    readAll().then(
+      (data) => {
+        remember(data)
+        fn({ paints: data.paints, kept })
+      },
+      () => {},
+    )
+  }
+  channel?.addEventListener('message', listen)
+  return () => channel?.removeEventListener('message', listen)
+}
