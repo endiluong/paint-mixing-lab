@@ -1,0 +1,194 @@
+{
+"SART-01": {
+"hex": "#F8F9FA",
+"name": "Art White"
+},
+"SART-02": {
+"hex": "#1A1A1A",
+"name": "Art Black"
+},
+"SART-03": {
+"hex": "#0063B2",
+"name": "Primary Blue"
+},
+"SART-04": {
+"hex": "#FFED00",
+"name": "Primary Yellow"
+},
+"SART-05": {
+"hex": "#E3000F",
+"name": "Primary Red"
+},
+"SART-06": {
+"hex": "#5C2C16",
+"name": "Burnt Sienna Umber"
+},
+"SART-07": {
+"hex": "#D47768",
+"name": "Pink Flesh"
+},
+"SART-08": {
+"hex": "#F89C51",
+"name": "Golden Flesh"
+},
+"SART-09": {
+"hex": "#E5B8A6",
+"name": "Light Skin"
+},
+"SART-10": {
+"hex": "#C11132",
+"name": "Crimson"
+},
+"SART-11": {
+"hex": "#4A5D3E",
+"name": "Moss Green"
+},
+"SART-12": {
+"hex": "#825134",
+"name": "Burnt Skin"
+},
+"SART-13": {
+"hex": "#BCAEA0",
+"name": "Buff"
+},
+"SART-14": {
+"hex": "#8B898A",
+"name": "Pearl Grey"
+},
+"SART-15": {
+"hex": "#6D6775",
+"name": "Violet Grey"
+},
+"SART-16": {
+"hex": "#3C443E",
+"name": "Green Grey"
+},
+"SART-17": {
+"hex": "#E9D874",
+"name": "Vanilla Yellow"
+},
+"SART-18": {
+"hex": "#F2B705",
+"name": "Yellow Naples"
+},
+"SART-19": {
+"hex": "#F5A800",
+"name": "Intense Yellow"
+},
+"SART-20": {
+"hex": "#C18728",
+"name": "Yellow Ochre"
+},
+"SART-21": {
+"hex": "#7D5226",
+"name": "Raw Sienna"
+},
+"SART-22": {
+"hex": "#E05C14",
+"name": "Orange"
+},
+"SART-23": {
+"hex": "#C9007A",
+"name": "Magenta"
+},
+"SART-24": {
+"hex": "#7A2A61",
+"name": "Purple"
+},
+"SART-25": {
+"hex": "#481F4B",
+"name": "Dark Violet"
+},
+"SART-26": {
+"hex": "#009B8E",
+"name": "Turquoise Blue"
+},
+"SART-27": {
+"hex": "#004F92",
+"name": "Cobalt Blue"
+},
+"SART-28": {
+"hex": "#263B8B",
+"name": "Light Ultramarine"
+},
+"SART-29": {
+"hex": "#2B2361",
+"name": "Dark Ultramarine"
+},
+"SART-30": {
+"hex": "#0E3347",
+"name": "Prussian Blue"
+},
+"SART-31": {
+"hex": "#7A963E",
+"name": "Light Moss Green"
+},
+"SART-32": {
+"hex": "#5A9933",
+"name": "Spring Green"
+},
+"SART-33": {
+"hex": "#006F4D",
+"name": "Emerald Green"
+},
+"SART-34": {
+"hex": "#114728",
+"name": "Sap Green"
+},
+"SART-35": {
+"hex": "#5A5531",
+"name": "Olive Green"
+},
+"SART-36": {
+"hex": "#4A432F",
+"name": "Earth Green"
+},
+"SART-37": {
+"hex": "#8B3A2C",
+"name": "Red Ochre"
+},
+"SART-38": {
+"hex": "#543126",
+"name": "Burnt Umber"
+},
+"SART-39": {
+"hex": "#6B4C41",
+"name": "Wood"
+},
+"SART-40": {
+"hex": "#685338",
+"name": "Raw Umber"
+},
+"SART-41": {
+"hex": "#2E1410",
+"name": "Dark Brown Ochre"
+},
+"SART-42": {
+"hex": "#893512",
+"name": "Burnt Sienna"
+},
+"SART-43": {
+"hex": "#F7F2D8",
+"name": "Vanilla White"
+},
+"SART-44": {
+"hex": "#8596A6",
+"name": "Artic Blue"
+},
+"SART-45": {
+"hex": "#8A679F",
+"name": "Pastel Violet"
+},
+"SART-46": {
+"hex": "#88A793",
+"name": "Pastel Green"
+},
+"SART-47": {
+"hex": "#D1CDB8",
+"name": "Off White"
+},
+"SART-48": {
+"hex": "#53798D",
+"name": "Pastel Blue"
+}
+}

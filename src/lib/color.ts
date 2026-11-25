@@ -8,7 +8,7 @@ const toLinear = (v: number): number => (v <= 0.04045 ? v / 12.92 : ((v + 0.055)
 
 export const isHex = (value: string): boolean => /^#[0-9a-f]{6}$/i.test(value)
 
-export const hexToLab = (hex: string): Lab => {
+const computeLab = (hex: string): Lab => {
   const [r, g, b] = [1, 3, 5].map((i) => toLinear(parseInt(hex.slice(i, i + 2), 16) / 255))
   const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b)
   const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b)
@@ -20,12 +20,27 @@ export const hexToLab = (hex: string): Lab => {
   }
 }
 
+const labCache = new Map<string, Lab>()
+
+export const hexToLab = (hex: string): Lab => {
+  const hit = labCache.get(hex)
+  if (hit) return hit
+  const lab = computeLab(hex)
+  if (labCache.size > 20000) labCache.clear()
+  labCache.set(hex, lab)
+  return lab
+}
+
 export const labDistance = (p: Lab, q: Lab): number => Math.hypot(p.L - q.L, p.a - q.a, p.b - q.b)
 
 export const chroma = (c: Lab): number => Math.hypot(c.a, c.b)
 
 /** Hue angle in degrees, 0-360. */
 export const hue = (c: Lab): number => ((Math.atan2(c.b, c.a) * 180) / Math.PI + 360) % 360
+
+/** CSS background for a paint: a metallic sweep when there is one, otherwise the flat colour. */
+export const paintBackground = (hex: string | null, metal: { angle: number; stops: string[] } | null | undefined): string =>
+  metal ? `linear-gradient(${metal.angle}deg, ${metal.stops.join(', ')})` : (hex ?? 'repeating-linear-gradient(45deg,#555 0 5px,#666 5px 10px)')
 
 /** Black or white text, whichever reads better on the colour. */
 export const inkOn = (hex: string): string => (hexToLab(hex).L > 0.62 ? '#111111' : '#ffffff')

@@ -3,8 +3,8 @@ import { Crosshair, FlaskConical, Heart, X } from 'lucide-react'
 import type { MixItem } from '@/features/mixer/bench'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { checkPaint, DUPLICATE, FINISH_LABEL, finishOf, loadReference, lookup, parseQuery, type Candidate, type Finish, type Lookup, type Query, type RefPaint, type Verdict, type VerdictKind } from '@/lib/buyCheck'
-import { closeness, hexToLab, inkOn, isHex, labDistance } from '@/lib/color'
-import type { Paint } from '@/lib/types'
+import { closeness, hexToLab, inkOn, isHex, labDistance, paintBackground } from '@/lib/color'
+import type { MetalSwatch, Paint } from '@/lib/types'
 
 interface Props {
   paints: Paint[]
@@ -40,6 +40,7 @@ const toCandidate = (q: Query, hit: Lookup | undefined, choice: Choice): Candida
     name: hit?.ref.name ?? q.name,
     hex: typedHex ?? hit?.ref.hex ?? '#000000',
     finish: choice.finish ?? (hit ? finishOf(hit.ref.set, hit.ref.name) : 'normal'),
+    metal: typedHex ? null : hit?.ref.metal,
     origin: typedHex ? 'typed' : 'open',
   }
 }
@@ -171,9 +172,9 @@ const Result = ({ raw, q, hits, hit, choice, candidate, verdict, twin, wished, c
         <div className="flex h-28 shrink-0 sm:h-auto sm:min-h-40 sm:w-64">
           {candidate && verdict ? (
             <>
-              {verdict.owned ? <Swatch hex={verdict.owned.hex ?? candidate.hex} label="Yours" /> : <Swatch hex={candidate.hex} label="To buy" />}
+              {verdict.owned ? <Swatch hex={verdict.owned.hex ?? candidate.hex} metal={verdict.owned.metal} label="Yours" /> : <Swatch hex={candidate.hex} metal={candidate.metal} label="To buy" />}
               {!verdict.owned && verdict.kind === 'mix' && mix && <Swatch hex={mix.hex} label="Your mix" />}
-              {!verdict.owned && verdict.kind !== 'mix' && nearest && <Swatch hex={nearest.hex} label={verdict.kind === 'gap' ? 'Nearest' : 'Yours'} />}
+              {!verdict.owned && verdict.kind !== 'mix' && nearest && <Swatch hex={nearest.hex} metal={nearest.paint.metal} label={verdict.kind === 'gap' ? 'Nearest' : 'Yours'} />}
             </>
           ) : <span className="flex-1" style={{ background: 'repeating-linear-gradient(45deg,#444 0 8px,#4e4e4e 8px 16px)' }} />}
         </div>
@@ -191,7 +192,7 @@ const Result = ({ raw, q, hits, hit, choice, candidate, verdict, twin, wished, c
           {verdict && !verdict.owned && verdict.neighbours.length === 0 && candidate && <p className="mt-2">You own no {FINISH_LABEL[candidate.finish]} to compare with.</p>}
           {verdict?.kind === 'mix' && mix && <p className="mt-1">Mix {mix.items.map((i) => `${i.parts} ${i.paint.name} ${i.paint.code}`).join(' + ')}.</p>}
           {verdict?.depends && <p className="mt-2 rounded-md bg-raised px-3 py-2 text-sm">Check in person. Other hex sources for your paint would change this answer.</p>}
-          {verdict && !verdict.owned && candidate && candidate.finish !== 'normal' && <p className="mt-2 rounded-md bg-raised px-3 py-2 text-sm">A hex shows this finish poorly, so treat this as a hint.</p>}
+          {verdict && !verdict.owned && candidate && candidate.finish !== 'normal' && !candidate.metal && <p className="mt-2 rounded-md bg-raised px-3 py-2 text-sm">A hex shows this finish poorly, so treat this as a hint.</p>}
           {twin && <p className="mt-2 rounded-md bg-raised px-3 py-2 text-sm">Nearly identical to {nameOf(twin) || twin.title}, also on your list.</p>}
           {hit && !hit.exact && !choice.hex && <p className="mt-2 rounded-md bg-raised px-3 py-2 text-sm">Is this the right paint? {hit.why[0].toUpperCase() + hit.why.slice(1)}.</p>}
           {!candidate && <p className="mt-2">{q.code ? `No paint with code ${q.code} in the data.` : 'No paint with this name in the data.'} Type its hex to compare the color.</p>}
@@ -210,7 +211,7 @@ const Result = ({ raw, q, hits, hit, choice, candidate, verdict, twin, wished, c
                 </select>
                 <button type="button" className="btn" disabled={wished || verdict?.kind === 'own'} onClick={save}><Heart size={15} />{wished ? 'On wishlist' : 'Save to wishlist'}</button>
                 {candidate.finish === 'normal' && <button type="button" className="btn" onClick={() => showOnGraph(candidate.hex)}><Crosshair size={15} />Show on sphere</button>}
-                {verdict?.kind === 'mix' && mix && <button type="button" className="btn" onClick={() => sendToMixer(mix.items.map((i) => ({ code: i.paint.code, parts: i.parts })))}><FlaskConical size={15} />Try the mix</button>}
+                {verdict?.kind === 'mix' && mix && <button type="button" className="btn" onClick={() => sendToMixer(mix.items.map((i) => ({ code: i.paint.id, parts: i.parts })))}><FlaskConical size={15} />Try the mix</button>}
               </>
             )}
           </div>
@@ -220,8 +221,8 @@ const Result = ({ raw, q, hits, hit, choice, candidate, verdict, twin, wished, c
   )
 }
 
-const Swatch = ({ hex, label }: { hex: string; label: string }) => (
-  <span className="flex flex-1 flex-col justify-end p-2.5 text-xs" style={{ background: hex, color: inkOn(hex) }}>
+const Swatch = ({ hex, metal, label }: { hex: string; metal?: MetalSwatch | null; label: string }) => (
+  <span className="flex flex-1 flex-col justify-end p-2.5 text-xs" style={{ background: paintBackground(hex, metal), color: inkOn(metal ? (metal.stops[0] ?? hex) : hex) }}>
     <span className="font-semibold">{label}</span>
     <span className="tnum">{hex}</span>
   </span>

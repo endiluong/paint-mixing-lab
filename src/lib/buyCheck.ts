@@ -1,7 +1,7 @@
 import { hexToLab, labDistance } from './color'
 import { findMixes, type Recipe } from './match'
-import { isUsable } from './paints'
-import type { Paint, UsablePaint } from './types'
+import { isUsable, SQUIDMAR, TMM } from './paints'
+import type { MetalSwatch, Paint, UsablePaint } from './types'
 
 export interface RefPaint {
   brand: string
@@ -9,6 +9,7 @@ export interface RefPaint {
   code: string
   set: string
   hex: string
+  metal?: MetalSwatch
 }
 
 export type Finish = 'normal' | 'metal' | 'ink' | 'contrast' | 'wash' | 'fluo' | 'special' | 'primer'
@@ -64,7 +65,7 @@ export interface Query {
 }
 
 const BRAND_WORDS: [RegExp, string][] = [
-  [/\bvallejo\b/i, 'Vallejo'], [/\bak(?:\s+interactive)?\b/i, 'AK Interactive'], [/\bscale\s*75\b|\bscalecolou?r\b/i, 'Scale75'], [/\bcitadel\b|\bgames workshop\b/i, 'Citadel'],
+  [/\bsquidmar(?:\s+colou?r)?\b/i, 'Vallejo'], [/\bvallejo\b/i, 'Vallejo'], [/\bak(?:\s+interactive)?\b/i, 'AK Interactive'], [/\bscale\s*75\b|\bscalecolou?r\b/i, 'Scale75'], [/\bcitadel\b|\bgames workshop\b/i, 'Citadel'],
   [/\barmy\s+painter\b/i, 'Army Painter'], [/\btamiya\b/i, 'Tamiya'], [/\bmr\.?\s*hobby\b|\bmr\.?\s*colou?r\b/i, 'Mr Hobby'], [/\breaper\b/i, 'Reaper'], [/\bp3\b/i, 'P3'],
   [/\bgreen\s+stuff(?:\s+world)?\b/i, 'Green Stuff World'], [/\bkimera\b/i, 'Kimera Kolors'], [/\bmonument\b|\bpro\s*acryl\b/i, 'Monument'], [/\bwarcolours\b/i, 'Warcolours'],
   [/\bammo\b|\bmig\b/i, 'Ammo by Mig'], [/\bhumbrol\b/i, 'Humbrol'], [/\brevell\b/i, 'Revell'], [/\bliquitex\b/i, 'Liquitex'], [/\bgolden\b(?=\s+(?:heavy|fluid|high|open|so))/i, 'Golden'],
@@ -143,6 +144,7 @@ export interface Candidate {
   name: string
   hex: string
   finish: Finish
+  metal?: MetalSwatch | null
   /** "open" when the hex is from the open dataset, "typed" when the user gave it. */
   origin: 'open' | 'typed'
 }
@@ -166,6 +168,10 @@ export interface Verdict {
   depends: boolean
 }
 
+/** Metallics are compared on body, highlight and shadow when both sides have a chart swatch. */
+const metalDistance = (a: MetalSwatch, b: MetalSwatch): number =>
+  (['body', 'highlight', 'shadow'] as const).reduce((sum, k) => sum + labDistance(hexToLab(a[k]), hexToLab(b[k])), 0) / 3
+
 const level = (d: number): number => (d < DUPLICATE ? 0 : d < CLOSE ? 1 : 2)
 
 /** Uses the same dataset on both sides when possible, because different swatch sets disagree on the same paint. */
@@ -187,6 +193,7 @@ export const checkPaint = (c: Candidate, paints: Paint[]): Verdict => {
   const neighbours = paints
     .filter((p) => p !== owned && ownedFinish(p) === c.finish)
     .flatMap<Neighbour>((paint) => {
+      if (c.metal && paint.metal) return [{ paint, hex: paint.metal.body, distance: metalDistance(c.metal, paint.metal), others: [] }]
       const hex = comparableHex(paint, c.origin)
       if (!hex) return []
       const known = [paint.hex, ...paint.references.map((r) => r.hex)].filter((h): h is string => h !== null && h !== hex)
@@ -212,5 +219,7 @@ export const loadReference = async (url: string): Promise<RefPaint[]> => {
   const res = await fetch(url)
   if (!res.ok) throw new Error(`reference ${res.status}`)
   const rows = (await res.json()) as [string, string, string, string, string][]
-  return rows.map(([brand, name, code, set, hex]) => ({ brand, name, code, set, hex }))
+  const metals = TMM.map<RefPaint>((m) => ({ brand: 'Vallejo', name: `${m.name} ${m.role}`, code: m.code, set: 'True Metallic Metal', hex: m.body, metal: m }))
+  const squidmar = SQUIDMAR.map<RefPaint>((p) => ({ brand: 'Vallejo', name: p.name, code: p.code, set: p.set, hex: p.hex, metal: p.metal ?? undefined }))
+  return [...metals, ...squidmar, ...rows.map<RefPaint>(([brand, name, code, set, hex]) => ({ brand, name, code, set, hex }))]
 }

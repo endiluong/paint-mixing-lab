@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { hexToLab, spherePosition } from '@/lib/color'
-import type { GraphProps } from './bench'
+import type { GraphPoint, GraphProps } from './bench'
 
 interface Scene {
   renderer: THREE.WebGLRenderer
@@ -46,6 +46,7 @@ const clear = (group: THREE.Group): void => {
   for (const child of [...group.children]) {
     group.remove(child)
     if (child instanceof THREE.Mesh && child.material instanceof THREE.Material) child.material.dispose()
+    if (child instanceof THREE.InstancedMesh) child.dispose()
   }
 }
 
@@ -112,10 +113,15 @@ export const ColorSphere = ({ points, markers, selected, onSelect }: GraphProps)
     controls.addEventListener('change', render)
 
     const ray = new THREE.Raycaster()
-    const hit = (e: PointerEvent): THREE.Object3D | null => {
+    const hit = (e: PointerEvent): { id: string | null; label: string } | null => {
       const r = el.getBoundingClientRect()
       ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), camera)
-      return ray.intersectObjects([...dots.children, ...gems.children].filter((o) => o.name !== 'ring'), false)[0]?.object ?? null
+      const first = ray.intersectObjects([...dots.children, ...gems.children].filter((o) => o.name !== 'ring'), false)[0]
+      if (!first) return null
+      const list = first.object.userData.points as GraphPoint[] | undefined
+      if (!list) return { id: null, label: String(first.object.userData.label) }
+      const p = list[first.instanceId ?? -1]
+      return p ? { id: p.id, label: [p.name, p.code, p.hex].filter(Boolean).join(' ') } : null
     }
     let down: [number, number] = [0, 0]
     const onMove = (e: PointerEvent): void => {
@@ -123,15 +129,15 @@ export const ColorSphere = ({ points, markers, selected, onSelect }: GraphProps)
       el.style.cursor = o ? 'pointer' : 'grab'
       if (!o) return setTip(null)
       const r = el.getBoundingClientRect()
-      setTip({ x: e.clientX - r.left, y: e.clientY - r.top, text: String(o.userData.label) })
+      setTip({ x: e.clientX - r.left, y: e.clientY - r.top, text: o.label })
     }
     const onDown = (e: PointerEvent): void => {
       down = [e.clientX, e.clientY]
     }
     const onUp = (e: PointerEvent): void => {
       if (Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 4) return
-      const code = hit(e)?.userData.code
-      if (typeof code === 'string') select.current(code)
+      const id = hit(e)?.id
+      if (id) select.current(id)
     }
     const onLeave = (): void => setTip(null)
     const canvas = renderer.domElement
@@ -157,18 +163,28 @@ export const ColorSphere = ({ points, markers, selected, onSelect }: GraphProps)
     const s = scene.current
     if (!s) return
     clear(s.points)
-    for (const p of points) {
-      const mesh = new THREE.Mesh(DOT, new THREE.MeshBasicMaterial({ color: p.hex, toneMapped: false }))
-      mesh.position.set(...spherePosition(hexToLab(p.hex)))
-      mesh.userData = { code: p.code, label: `${p.name} ${p.code} ${p.hex}` }
-      if (p.code === selected) {
-        mesh.scale.setScalar(1.5)
+    if (points.length > 0) {
+      const crowded = points.length > 400
+      const mesh = new THREE.InstancedMesh(DOT, new THREE.MeshBasicMaterial({ toneMapped: false }), points.length)
+      const matrix = new THREE.Matrix4()
+      const color = new THREE.Color()
+      points.forEach((p, i) => {
+        const size = crowded ? (p.owned ? 0.85 : 0.5) : 1
+        const k = p.id === selected ? Math.max(1.4, size) : size
+        matrix.makeScale(k, k, k).setPosition(...spherePosition(hexToLab(p.hex)))
+        mesh.setMatrixAt(i, matrix)
+        mesh.setColorAt(i, color.set(p.hex))
+      })
+      mesh.userData = { points }
+      mesh.computeBoundingSphere()
+      s.points.add(mesh)
+      const chosen = points.find((p) => p.id === selected)
+      if (chosen) {
         const ring = new THREE.Mesh(RING, new THREE.MeshBasicMaterial({ color: '#ffffff', toneMapped: false }))
         ring.name = 'ring'
-        ring.position.copy(mesh.position)
+        ring.position.set(...spherePosition(hexToLab(chosen.hex)))
         s.points.add(ring)
       }
-      s.points.add(mesh)
     }
     s.render()
   }, [points, selected])

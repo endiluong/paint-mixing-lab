@@ -1,16 +1,19 @@
 import { useMemo } from 'react'
 import { chroma, hexToLab, hue } from '@/lib/color'
 import type { Paint } from '@/lib/types'
+import { MultiSelect, type MultiOption } from './MultiSelect'
 
 export interface FilterState {
   q: string
   group: string
-  type: string
-  brand: string
+  /** Empty means every type. */
+  types: string[]
+  /** Empty means every brand. */
+  brands: string[]
   sort: 'hue' | 'light' | 'code' | 'name'
 }
 
-export const EMPTY_FILTER: FilterState = { q: '', group: '', type: '', brand: '', sort: 'hue' }
+export const EMPTY_FILTER: FilterState = { q: '', group: '', types: [], brands: [], sort: 'hue' }
 
 const hueKey = (p: Paint): number => {
   if (!p.hex) return 9999
@@ -24,9 +27,9 @@ export const applyFilter = <T extends Paint>(paints: T[], f: FilterState): T[] =
   const out = paints.filter(
     (p) =>
       (!f.group || p.group === f.group) &&
-      (!f.type || p.type === f.type) &&
-      (!f.brand || p.brand === f.brand) &&
-      (!q || p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q) || (bare !== '' && p.code.toLowerCase().replace(/[^a-z0-9]/g, '').includes(bare))),
+      (f.types.length === 0 || f.types.includes(p.type)) &&
+      (f.brands.length === 0 || f.brands.includes(p.brand)) &&
+      (!q || p.name.toLowerCase().includes(q) || p.line.toLowerCase().includes(q) || p.code.toLowerCase().includes(q) || (bare !== '' && p.code.toLowerCase().replace(/[^a-z0-9]/g, '').includes(bare))),
   )
   const sorters: Record<FilterState['sort'], (a: T, b: T) => number> = {
     hue: (a, b) => hueKey(a) - hueKey(b),
@@ -45,18 +48,21 @@ interface Props {
 
 const unique = (values: string[]): string[] => [...new Set(values)].sort()
 
+/** Counts follow the other filters, so a number is what ticking that box would show. Ticked values stay listed even at zero. */
+const countBy = (paints: Paint[], every: string[], key: 'type' | 'brand'): MultiOption[] => {
+  const counts = new Map(every.map((v) => [v, 0]))
+  for (const p of paints) counts.set(p[key], (counts.get(p[key]) ?? 0) + 1)
+  return every.map((v) => ({ value: v, count: counts.get(v) ?? 0 }))
+}
+
 export const Filters = ({ paints, value, onChange }: Props) => {
   const options = useMemo(
     () => ({ group: unique(paints.map((p) => p.group)), type: unique(paints.map((p) => p.type)), brand: unique(paints.map((p) => p.brand)) }),
     [paints],
   )
-  const pick = (key: 'group' | 'type' | 'brand', label: string) => (
-    <select aria-label={label} className="field min-w-0 flex-1" value={value[key]} onChange={(e) => onChange({ ...value, [key]: e.target.value })}>
-      <option value="">{label}</option>
-      {options[key].map((o) => <option key={o} value={o}>{o}</option>)}
-    </select>
-  )
-  const dirty = value.q || value.group || value.type || value.brand
+  const typeOptions = useMemo(() => countBy(applyFilter(paints, { ...value, types: [] }), options.type, 'type'), [paints, value, options])
+  const brandOptions = useMemo(() => countBy(applyFilter(paints, { ...value, brands: [] }), options.brand, 'brand'), [paints, value, options])
+  const dirty = value.q !== '' || value.group !== '' || value.types.length > 0 || value.brands.length > 0
   return (
     <div className="flex flex-col gap-2">
       <div className="flex gap-2">
@@ -69,9 +75,12 @@ export const Filters = ({ paints, value, onChange }: Props) => {
         </select>
       </div>
       <div className="flex gap-2">
-        {pick('group', 'All color groups')}
-        {pick('type', 'All types')}
-        {pick('brand', 'All brands')}
+        <select aria-label="All color groups" className="field min-w-0 flex-1" value={value.group} onChange={(e) => onChange({ ...value, group: e.target.value })}>
+          <option value="">All color groups</option>
+          {options.group.map((o) => <option key={o} value={o}>{o}</option>)}
+        </select>
+        <MultiSelect noun="types" options={typeOptions} value={value.types} onChange={(types) => onChange({ ...value, types })} />
+        <MultiSelect noun="brands" options={brandOptions} value={value.brands} onChange={(brands) => onChange({ ...value, brands })} />
         {dirty && <button type="button" className="btn" onClick={() => onChange({ ...EMPTY_FILTER, sort: value.sort })}>Clear</button>}
       </div>
     </div>

@@ -45,9 +45,9 @@ export const MatchBench = ({ paints, target, setTarget, load }: Props) => {
           <h3 className="mb-1.5 text-sm text-dim">Straight from the bottle</h3>
           <ul className="grid gap-1.5">
             {singles.map(({ paint, distance }) => (
-              <li key={paint.code} className="flex items-center gap-2">
+              <li key={paint.id} className="flex items-center gap-2">
                 <span className="flex h-8 w-16 shrink-0 overflow-hidden rounded"><span className="flex-1" style={{ background: target }} /><span className="flex-1" style={{ background: paint.hex }} /></span>
-                <span className="min-w-0 flex-1 truncate">{paint.name} <span className="font-code text-dim">{paint.code}</span></span>
+                <span className="min-w-0 flex-1 truncate">{paint.name} <span className="font-code text-dim">{paint.code}</span>{!paint.owned && <span className="text-xs text-dim"> {paint.brand}, not owned</span>}</span>
                 <span className="text-sm text-dim">{closeness(distance)}</span>
               </li>
             ))}
@@ -57,8 +57,8 @@ export const MatchBench = ({ paints, target, setTarget, load }: Props) => {
           <h3 className="mb-1.5 text-sm text-dim">Best mixes, target on the left. Press one to open it.</h3>
           <ul className="grid gap-1.5">
             {mixes.map((m) => (
-              <li key={m.items.map((i) => i.paint.code).join()}>
-                <button type="button" className="flex w-full items-center gap-2 rounded text-left hover:bg-raised" onClick={() => load(m.items.map((i) => ({ code: i.paint.code, parts: i.parts })))}>
+              <li key={m.items.map((i) => i.paint.id).join()}>
+                <button type="button" className="flex w-full items-center gap-2 rounded text-left hover:bg-raised" onClick={() => load(m.items.map((i) => ({ code: i.paint.id, parts: i.parts })))}>
                   <span className="flex h-9 w-16 shrink-0 overflow-hidden rounded"><span className="flex-1" style={{ background: target }} /><span className="flex-1" style={{ background: m.hex, color: inkOn(m.hex) }} /></span>
                   <span className="min-w-0 flex-1 text-sm">{m.items.map((i) => `${i.parts} ${i.paint.name}`).join(' + ')}</span>
                   <span className="shrink-0 text-sm text-dim">{closeness(m.distance)}</span>

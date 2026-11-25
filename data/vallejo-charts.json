@@ -1,0 +1,1727 @@
+{
+"70.740": {
+"hex": "#513E21",
+"name": "Cam.MiddleBrown",
+"sweep": false
+},
+"70.741": {
+"hex": "#313028",
+"name": "Cam. Black Green",
+"sweep": false
+},
+"70.745": {
+"hex": "#7F5251",
+"name": "Dark Rose",
+"sweep": false
+},
+"70.746": {
+"hex": "#613F3A",
+"name": "Chestnut Brown",
+"sweep": false
+},
+"70.747": {
+"hex": "#BB594F",
+"name": "Faded Red",
+"sweep": false
+},
+"70.748": {
+"hex": "#E08DA3",
+"name": "Light Pink",
+"sweep": false
+},
+"70.749": {
+"hex": "#452734",
+"name": "Dark Purple",
+"sweep": false
+},
+"70.750": {
+"hex": "#A793BB",
+"name": "Light Violet",
+"sweep": false
+},
+"70.751": {
+"hex": "#392A31",
+"name": "Black Violet",
+"sweep": false
+},
+"70.752": {
+"hex": "#25202C",
+"name": "Infantry Blue",
+"sweep": false
+},
+"70.753": {
+"hex": "#0A98A5",
+"name": "Light Blue Green",
+"sweep": false
+},
+"70.754": {
+"hex": "#25242B",
+"name": "Continental Blue",
+"sweep": false
+},
+"70.755": {
+"hex": "#057C72",
+"name": "Light Emerald",
+"sweep": false
+},
+"70.756": {
+"hex": "#446441",
+"name": "Splinter Green",
+"sweep": false
+},
+"70.757": {
+"hex": "#587064",
+"name": "Pacific Green",
+"sweep": false
+},
+"70.758": {
+"hex": "#6F8349",
+"name": "Bright Green",
+"sweep": false
+},
+"70.759": {
+"hex": "#524B3E",
+"name": "German Tank Crew",
+"sweep": false
+},
+"70.760": {
+"hex": "#7A755A",
+"name": "Light Mud",
+"sweep": false
+},
+"70.761": {
+"hex": "#816D53",
+"name": "Old Wood",
+"sweep": false
+},
+"70.762": {
+"hex": "#5B4922",
+"name": "Grey Brown",
+"sweep": false
+},
+"70.763": {
+"hex": "#4B3F1F",
+"name": "Canvas",
+"sweep": false
+},
+"70.764": {
+"hex": "#937726",
+"name": "Military Yellow",
+"sweep": false
+},
+"70.765": {
+"hex": "#B5A386",
+"name": "Desert Tan",
+"sweep": false
+},
+"70.766": {
+"hex": "#E1D2C3",
+"name": "Cream White",
+"sweep": false
+},
+"70.767": {
+"hex": "#AD8355",
+"name": "Desert Brown",
+"sweep": false
+},
+"70.768": {
+"hex": "#76583D",
+"name": "BC Dark Brown",
+"sweep": false
+},
+"70.769": {
+"hex": "#9E724A",
+"name": "Mustard Brown",
+"sweep": false
+},
+"70.770": {
+"hex": "#89613B",
+"name": "New Wood",
+"sweep": false
+},
+"70.771": {
+"hex": "#3D2525",
+"name": "Dark Rust",
+"sweep": false
+},
+"70.772": {
+"hex": "#769C94",
+"name": "Medium Grey Blue",
+"sweep": false
+},
+"70.773": {
+"hex": "#5A5A59",
+"name": "Violet Grey",
+"sweep": false
+},
+"70.774": {
+"hex": "#7F6F6E",
+"name": "Lavender Grey",
+"sweep": false
+},
+"70.790": {
+"hex": "#E8EBEE",
+"name": "Silver",
+"sweep": true
+},
+"70.791": {
+"hex": "#BEAD97",
+"name": "Gold",
+"sweep": true
+},
+"70.792": {
+"hex": "#CEBC42",
+"name": "Old Gold",
+"sweep": true
+},
+"70.793": {
+"hex": "#B79341",
+"name": "Rich Gold",
+"sweep": true
+},
+"70.794": {
+"hex": "#D39F37",
+"name": "Red Gold",
+"sweep": true
+},
+"70.795": {
+"hex": "#9C853F",
+"name": "Green Gold",
+"sweep": true
+},
+"70.796": {
+"hex": "#E3E4E7",
+"name": "White Gold",
+"sweep": true
+},
+"70.797": {
+"hex": "#A95A38",
+"name": "Copper",
+"sweep": true
+},
+"70.800": {
+"hex": "#242732",
+"name": "Gunmetal Blue",
+"sweep": false
+},
+"70.801": {
+"hex": "#643B1D",
+"name": "Brass",
+"sweep": false
+},
+"70.802": {
+"hex": "#BE2A4A",
+"name": "Sunset Red",
+"sweep": false
+},
+"70.803": {
+"hex": "#9C6660",
+"name": "Brown Rose",
+"sweep": false
+},
+"70.804": {
+"hex": "#B16F4B",
+"name": "Beige Red",
+"sweep": false
+},
+"70.805": {
+"hex": "#BB6355",
+"name": "German Orange",
+"sweep": false
+},
+"70.806": {
+"hex": "#CDB65E",
+"name": "German Yellow",
+"sweep": false
+},
+"70.807": {
+"hex": "#3D3954",
+"name": "Oxford Blue",
+"sweep": false
+},
+"70.808": {
+"hex": "#057986",
+"name": "Blue Green",
+"sweep": false
+},
+"70.809": {
+"hex": "#19437E",
+"name": "Royal Blue",
+"sweep": false
+},
+"70.810": {
+"hex": "#4B2740",
+"name": "Royal Purple",
+"sweep": false
+},
+"70.811": {
+"hex": "#58477E",
+"name": "Blue Violet",
+"sweep": false
+},
+"70.812": {
+"hex": "#63353F",
+"name": "Violet Red",
+"sweep": false
+},
+"70.814": {
+"hex": "#753C3B",
+"name": "Burnt Red",
+"sweep": false
+},
+"70.815": {
+"hex": "#E9AD8D",
+"name": "Basic Skin Tone",
+"sweep": false
+},
+"70.816": {
+"hex": "#44414C",
+"name": "Luftwaffe Uniform",
+"sweep": false
+},
+"70.817": {
+"hex": "#C13E2E",
+"name": "Scarlet",
+"sweep": false
+},
+"70.818": {
+"hex": "#955439",
+"name": "Red Leather",
+"sweep": false
+},
+"70.819": {
+"hex": "#B4935E",
+"name": "Iraqi Sand",
+"sweep": false
+},
+"70.820": {
+"hex": "#F4EDE6",
+"name": "Off-White",
+"sweep": false
+},
+"70.821": {
+"hex": "#776A51",
+"name": "Germ. Beige WWII",
+"sweep": false
+},
+"70.822": {
+"hex": "#413435",
+"name": "Cam. Black Brown",
+"sweep": false
+},
+"70.823": {
+"hex": "#373F25",
+"name": "Luftwaffe Green",
+"sweep": false
+},
+"70.824": {
+"hex": "#AA8136",
+"name": "Orange Ochre",
+"sweep": false
+},
+"70.825": {
+"hex": "#9F8273",
+"name": "Pale Brown",
+"sweep": false
+},
+"70.826": {
+"hex": "#5B473C",
+"name": "Medium Brown",
+"sweep": false
+},
+"70.827": {
+"hex": "#7C9434",
+"name": "Lime Green",
+"sweep": false
+},
+"70.828": {
+"hex": "#664540",
+"name": "Mahogany Ink",
+"sweep": false
+},
+"70.829": {
+"hex": "#D24E31",
+"name": "Amaranth Red",
+"sweep": false
+},
+"70.830": {
+"hex": "#57523A",
+"name": "Ger. Fieldgrey WWII",
+"sweep": false
+},
+"70.833": {
+"hex": "#455734",
+"name": "Fern Green",
+"sweep": false
+},
+"70.835": {
+"hex": "#E18E7C",
+"name": "Salmon Rose",
+"sweep": false
+},
+"70.836": {
+"hex": "#696362",
+"name": "London Grey",
+"sweep": false
+},
+"70.837": {
+"hex": "#E3C28D",
+"name": "Pale Sand",
+"sweep": false
+},
+"70.838": {
+"hex": "#00624A",
+"name": "Emerald",
+"sweep": false
+},
+"70.840": {
+"hex": "#00688C",
+"name": "Light Turquoise",
+"sweep": false
+},
+"70.841": {
+"hex": "#0071AD",
+"name": "Andrea Blue",
+"sweep": false
+},
+"70.843": {
+"hex": "#A0704E",
+"name": "Cork Brown",
+"sweep": false
+},
+"70.844": {
+"hex": "#4D96C4",
+"name": "Deep Sky Blue",
+"sweep": false
+},
+"70.845": {
+"hex": "#EC9745",
+"name": "Sunny Skin Tone",
+"sweep": false
+},
+"70.846": {
+"hex": "#76524B",
+"name": "Mahogany Brown",
+"sweep": false
+},
+"70.847": {
+"hex": "#CBA665",
+"name": "Dark Sand",
+"sweep": false
+},
+"70.850": {
+"hex": "#404E31",
+"name": "Medium Olive",
+"sweep": false
+},
+"70.851": {
+"hex": "#DE5A20",
+"name": "Bright Orange",
+"sweep": false
+},
+"70.856": {
+"hex": "#AA793E",
+"name": "Ochre Brown",
+"sweep": false
+},
+"70.858": {
+"hex": "#ECCF70",
+"name": "Ice Yellow",
+"sweep": false
+},
+"70.859": {
+"hex": "#552F2B",
+"name": "Black Red",
+"sweep": false
+},
+"70.860": {
+"hex": "#B0793F",
+"name": "Med. Flesh Tone",
+"sweep": false
+},
+"70.861": {
+"hex": "#241E1F",
+"name": "Gloss Black",
+"sweep": false
+},
+"70.862": {
+"hex": "#302722",
+"name": "Black Grey",
+"sweep": false
+},
+"70.863": {
+"hex": "#32292D",
+"name": "Gunmetal",
+"sweep": false
+},
+"70.864": {
+"hex": "#535259",
+"name": "Natural Steel",
+"sweep": false
+},
+"70.865": {
+"hex": "#484145",
+"name": "Oily Steel",
+"sweep": false
+},
+"70.866": {
+"hex": "#423F3D",
+"name": "Grey Green",
+"sweep": false
+},
+"70.867": {
+"hex": "#424346",
+"name": "Dark Blue Grey",
+"sweep": false
+},
+"70.868": {
+"hex": "#4B4546",
+"name": "Dark Sea Green",
+"sweep": false
+},
+"70.869": {
+"hex": "#5B585D",
+"name": "Basalt Grey",
+"sweep": false
+},
+"70.870": {
+"hex": "#7D7B7B",
+"name": "Medium Sea Grey",
+"sweep": false
+},
+"70.871": {
+"hex": "#594435",
+"name": "Leather Brown",
+"sweep": false
+},
+"70.872": {
+"hex": "#59433D",
+"name": "Chocolate Brown",
+"sweep": false
+},
+"70.873": {
+"hex": "#816746",
+"name": "US Field Drab",
+"sweep": false
+},
+"70.874": {
+"hex": "#987658",
+"name": "Tan Earth",
+"sweep": false
+},
+"70.875": {
+"hex": "#815F44",
+"name": "Beige Brown",
+"sweep": false
+},
+"70.876": {
+"hex": "#926144",
+"name": "Brown Sand",
+"sweep": false
+},
+"70.877": {
+"hex": "#BF863C",
+"name": "Gold Brown",
+"sweep": false
+},
+"70.878": {
+"hex": "#53381C",
+"name": "Old Gold",
+"sweep": false
+},
+"70.879": {
+"hex": "#816C31",
+"name": "Green Brown",
+"sweep": false
+},
+"70.880": {
+"hex": "#7C6338",
+"name": "Khaki Grey",
+"sweep": false
+},
+"70.881": {
+"hex": "#6F653C",
+"name": "Green Yellow",
+"sweep": false
+},
+"70.882": {
+"hex": "#937F40",
+"name": "Middle Stone",
+"sweep": false
+},
+"70.883": {
+"hex": "#D7CFC6",
+"name": "Silver Grey",
+"sweep": false
+},
+"70.884": {
+"hex": "#8A7C64",
+"name": "Stone Grey",
+"sweep": false
+},
+"70.885": {
+"hex": "#94976F",
+"name": "Pastel Green",
+"sweep": false
+},
+"70.886": {
+"hex": "#65634F",
+"name": "Green Grey",
+"sweep": false
+},
+"70.887": {
+"hex": "#57523C",
+"name": "US Olive Drab",
+"sweep": false
+},
+"70.888": {
+"hex": "#42412D",
+"name": "Olive Grey",
+"sweep": false
+},
+"70.889": {
+"hex": "#3F3128",
+"name": "Olive Brown",
+"sweep": false
+},
+"70.890": {
+"hex": "#454934",
+"name": "Refractive Green",
+"sweep": false
+},
+"70.891": {
+"hex": "#506642",
+"name": "IntermediateGreen",
+"sweep": false
+},
+"70.892": {
+"hex": "#383B31",
+"name": "Yellow Olive",
+"sweep": false
+},
+"70.893": {
+"hex": "#4B4A38",
+"name": "US Dark Green",
+"sweep": false
+},
+"70.894": {
+"hex": "#3C3B2F",
+"name": "Cam. Olive Green",
+"sweep": false
+},
+"70.895": {
+"hex": "#4D5841",
+"name": "Gunship Green",
+"sweep": false
+},
+"70.896": {
+"hex": "#2A2A14",
+"name": "Extra Dark Green",
+"sweep": false
+},
+"70.897": {
+"hex": "#313A28",
+"name": "Bronze Green",
+"sweep": false
+},
+"70.898": {
+"hex": "#262D38",
+"name": "Dark Sea Blue",
+"sweep": false
+},
+"70.899": {
+"hex": "#37273F",
+"name": "Dark Prussian Blue",
+"sweep": false
+},
+"70.901": {
+"hex": "#607B91",
+"name": "Pastel Blue",
+"sweep": false
+},
+"70.902": {
+"hex": "#5B6B9E",
+"name": "Azure",
+"sweep": false
+},
+"70.905": {
+"hex": "#808586",
+"name": "Blue Grey Pale",
+"sweep": false
+},
+"70.906": {
+"hex": "#90A3A7",
+"name": "Pale Blue",
+"sweep": false
+},
+"70.907": {
+"hex": "#A8B5B5",
+"name": "Pale Grey Blue",
+"sweep": false
+},
+"70.908": {
+"hex": "#97211E",
+"name": "Carmine Red",
+"sweep": false
+},
+"70.909": {
+"hex": "#C42A29",
+"name": "Vermilion",
+"sweep": false
+},
+"70.911": {
+"hex": "#EE7225",
+"name": "Light Orange",
+"sweep": false
+},
+"70.913": {
+"hex": "#DEAA46",
+"name": "Yellow Ochre",
+"sweep": false
+},
+"70.914": {
+"hex": "#A07F37",
+"name": "Green Ochre",
+"sweep": false
+},
+"70.915": {
+"hex": "#F0C709",
+"name": "Deep Yellow",
+"sweep": false
+},
+"70.916": {
+"hex": "#EABF54",
+"name": "Sand Yellow",
+"sweep": false
+},
+"70.917": {
+"hex": "#E0BE6D",
+"name": "Beige",
+"sweep": false
+},
+"70.918": {
+"hex": "#EAE2D2",
+"name": "Ivory",
+"sweep": false
+},
+"70.919": {
+"hex": "#F6F5F9",
+"name": "Cold White",
+"sweep": false
+},
+"70.920": {
+"hex": "#434E42",
+"name": "German Uniform",
+"sweep": false
+},
+"70.921": {
+"hex": "#6F532C",
+"name": "English Uniform",
+"sweep": false
+},
+"70.922": {
+"hex": "#49552F",
+"name": "Uniform Green",
+"sweep": false
+},
+"70.923": {
+"hex": "#9F802A",
+"name": "Japan. Unif. WWII",
+"sweep": false
+},
+"70.924": {
+"hex": "#555335",
+"name": "Russian Unif. WWII",
+"sweep": false
+},
+"70.925": {
+"hex": "#372D4B",
+"name": "Blue",
+"sweep": false
+},
+"70.926": {
+"hex": "#7A2826",
+"name": "Red",
+"sweep": false
+},
+"70.927": {
+"hex": "#D2933A",
+"name": "Dark Flesh",
+"sweep": false
+},
+"70.928": {
+"hex": "#F3D4B8",
+"name": "Light Flesh",
+"sweep": false
+},
+"70.929": {
+"hex": "#A05B31",
+"name": "Light Brown",
+"sweep": false
+},
+"70.930": {
+"hex": "#273462",
+"name": "Dark Blue",
+"sweep": false
+},
+"70.939": {
+"hex": "#5D4944",
+"name": "Smoke Ink",
+"sweep": false
+},
+"70.940": {
+"hex": "#8B645B",
+"name": "Saddle Brown",
+"sweep": false
+},
+"70.941": {
+"hex": "#513B30",
+"name": "Burnt Umber",
+"sweep": false
+},
+"70.943": {
+"hex": "#596E84",
+"name": "Grey Blue",
+"sweep": false
+},
+"70.944": {
+"hex": "#BC6E6F",
+"name": "Old Rose",
+"sweep": false
+},
+"70.945": {
+"hex": "#903055",
+"name": "Magenta",
+"sweep": false
+},
+"70.946": {
+"hex": "#692F25",
+"name": "Dark Red",
+"sweep": false
+},
+"70.947": {
+"hex": "#B52A27",
+"name": "Dark Vermilion",
+"sweep": false
+},
+"70.948": {
+"hex": "#F7A833",
+"name": "Golden Yellow",
+"sweep": false
+},
+"70.949": {
+"hex": "#F7D345",
+"name": "Light Yellow",
+"sweep": false
+},
+"70.950": {
+"hex": "#231C1D",
+"name": "Black",
+"sweep": false
+},
+"70.951": {
+"hex": "#FFFFFF",
+"name": "White",
+"sweep": false
+},
+"70.952": {
+"hex": "#E5D20C",
+"name": "Lemon Yellow",
+"sweep": false
+},
+"70.953": {
+"hex": "#F5BA34",
+"name": "Flat Yellow",
+"sweep": false
+},
+"70.954": {
+"hex": "#DEDD21",
+"name": "Yellow Green",
+"sweep": false
+},
+"70.955": {
+"hex": "#DF9A59",
+"name": "Flat Flesh",
+"sweep": false
+},
+"70.956": {
+"hex": "#CC4626",
+"name": "Clear Orange",
+"sweep": false
+},
+"70.957": {
+"hex": "#A12B28",
+"name": "Flat Red",
+"sweep": false
+},
+"70.958": {
+"hex": "#B14E7C",
+"name": "Pink",
+"sweep": false
+},
+"70.959": {
+"hex": "#533153",
+"name": "Purple",
+"sweep": false
+},
+"70.960": {
+"hex": "#3B2C4C",
+"name": "Violet",
+"sweep": false
+},
+"70.961": {
+"hex": "#74B7D0",
+"name": "Sky Blue",
+"sweep": false
+},
+"70.962": {
+"hex": "#3E4874",
+"name": "Flat Blue",
+"sweep": false
+},
+"70.963": {
+"hex": "#15416E",
+"name": "Medium Blue",
+"sweep": false
+},
+"70.964": {
+"hex": "#4C5257",
+"name": "Field Blue",
+"sweep": false
+},
+"70.965": {
+"hex": "#38415D",
+"name": "Prussian Blue",
+"sweep": false
+},
+"70.966": {
+"hex": "#0C425B",
+"name": "Turquoise",
+"sweep": false
+},
+"70.967": {
+"hex": "#506237",
+"name": "Olive Green",
+"sweep": false
+},
+"70.968": {
+"hex": "#354B2D",
+"name": "Flat Green",
+"sweep": false
+},
+"70.969": {
+"hex": "#1A634A",
+"name": "Park Green Flat",
+"sweep": false
+},
+"70.970": {
+"hex": "#194C2F",
+"name": "Deep Green",
+"sweep": false
+},
+"70.971": {
+"hex": "#B4B5AB",
+"name": "Light Green Grey",
+"sweep": false
+},
+"70.972": {
+"hex": "#86968E",
+"name": "Light Green Blue",
+"sweep": false
+},
+"70.974": {
+"hex": "#799165",
+"name": "Green Sky",
+"sweep": false
+},
+"70.975": {
+"hex": "#434234",
+"name": "Military Green",
+"sweep": false
+},
+"70.976": {
+"hex": "#D6B04D",
+"name": "Buff",
+"sweep": false
+},
+"70.977": {
+"hex": "#B58547",
+"name": "Desert Yellow",
+"sweep": false
+},
+"70.978": {
+"hex": "#908739",
+"name": "Dark Yellow",
+"sweep": false
+},
+"70.979": {
+"hex": "#263122",
+"name": "Cam. Dark Green",
+"sweep": false
+},
+"70.980": {
+"hex": "#27352A",
+"name": "Black Green",
+"sweep": false
+},
+"70.981": {
+"hex": "#AC633A",
+"name": "Orange Brown",
+"sweep": false
+},
+"70.982": {
+"hex": "#854438",
+"name": "Cavalry Brown",
+"sweep": false
+},
+"70.983": {
+"hex": "#674529",
+"name": "Flat Earth",
+"sweep": false
+},
+"70.984": {
+"hex": "#6F4037",
+"name": "Flat Brown",
+"sweep": false
+},
+"70.985": {
+"hex": "#5D3938",
+"name": "Hull Red",
+"sweep": false
+},
+"70.986": {
+"hex": "#AAA390",
+"name": "Deck Tan",
+"sweep": false
+},
+"70.987": {
+"hex": "#867259",
+"name": "Medium Grey",
+"sweep": false
+},
+"70.988": {
+"hex": "#6F5E3B",
+"name": "Khaki",
+"sweep": false
+},
+"70.989": {
+"hex": "#A8AAAC",
+"name": "Sky Grey",
+"sweep": false
+},
+"70.990": {
+"hex": "#8E9294",
+"name": "Light Grey",
+"sweep": false
+},
+"70.991": {
+"hex": "#6C6B6A",
+"name": "Dark Sea Grey",
+"sweep": false
+},
+"70.992": {
+"hex": "#61615F",
+"name": "Neutral Grey",
+"sweep": false
+},
+"70.993": {
+"hex": "#E4DFDE",
+"name": "White Grey",
+"sweep": false
+},
+"70.994": {
+"hex": "#312E34",
+"name": "Dark Grey",
+"sweep": false
+},
+"70.995": {
+"hex": "#2E2E2C",
+"name": "German Grey",
+"sweep": false
+},
+"70.996": {
+"hex": "#976727",
+"name": "Gold",
+"sweep": false
+},
+"70.997": {
+"hex": "#939290",
+"name": "Silver",
+"sweep": false
+},
+"70.998": {
+"hex": "#523B1E",
+"name": "Bronze",
+"sweep": false
+},
+"70.999": {
+"hex": "#7F3427",
+"name": "Copper",
+"sweep": false
+},
+"72.001": {
+"hex": "#FFFFFF",
+"name": "Dead White",
+"sweep": false
+},
+"72.003": {
+"hex": "#CAA37F",
+"name": "Pale Flesh",
+"sweep": false
+},
+"72.004": {
+"hex": "#CA8954",
+"name": "Elf Skin Tone",
+"sweep": false
+},
+"72.005": {
+"hex": "#EFB705",
+"name": "Moon Yellow",
+"sweep": false
+},
+"72.006": {
+"hex": "#F6A30A",
+"name": "Sun Yellow",
+"sweep": false
+},
+"72.007": {
+"hex": "#D67419",
+"name": "Gold Yellow",
+"sweep": false
+},
+"72.008": {
+"hex": "#EA5B1D",
+"name": "Orange Fire",
+"sweep": false
+},
+"72.009": {
+"hex": "#E23921",
+"name": "Hot Orange",
+"sweep": false
+},
+"72.011": {
+"hex": "#7D1E1F",
+"name": "Gory Red",
+"sweep": false
+},
+"72.012": {
+"hex": "#761E1E",
+"name": "Scarlet Red",
+"sweep": false
+},
+"72.013": {
+"hex": "#C877A4",
+"name": "Squid Pink",
+"sweep": false
+},
+"72.014": {
+"hex": "#862351",
+"name": "Warlord Purple",
+"sweep": false
+},
+"72.015": {
+"hex": "#4B2854",
+"name": "Hexed Lichen",
+"sweep": false
+},
+"72.016": {
+"hex": "#2E2337",
+"name": "Royal Purple",
+"sweep": false
+},
+"72.019": {
+"hex": "#202430",
+"name": "Night Blue",
+"sweep": false
+},
+"72.020": {
+"hex": "#242B47",
+"name": "Imperial Blue",
+"sweep": false
+},
+"72.021": {
+"hex": "#0069A6",
+"name": "Magic Blue",
+"sweep": false
+},
+"72.022": {
+"hex": "#363967",
+"name": "Ultramarine Blue",
+"sweep": false
+},
+"72.023": {
+"hex": "#4299B2",
+"name": "Electric Blue",
+"sweep": false
+},
+"72.024": {
+"hex": "#036161",
+"name": "Turquoise",
+"sweep": false
+},
+"72.025": {
+"hex": "#00A17E",
+"name": "Foul Green",
+"sweep": false
+},
+"72.026": {
+"hex": "#007154",
+"name": "Jade Green",
+"sweep": false
+},
+"72.027": {
+"hex": "#1B4E43",
+"name": "Scurvy Green",
+"sweep": false
+},
+"72.028": {
+"hex": "#1F3725",
+"name": "Dark Green",
+"sweep": false
+},
+"72.029": {
+"hex": "#3F6137",
+"name": "Sick Green",
+"sweep": false
+},
+"72.030": {
+"hex": "#566033",
+"name": "Goblin Green",
+"sweep": false
+},
+"72.031": {
+"hex": "#8B7632",
+"name": "Camouflage Green",
+"sweep": false
+},
+"72.032": {
+"hex": "#4E8335",
+"name": "Scorpy Green",
+"sweep": false
+},
+"72.034": {
+"hex": "#BEA474",
+"name": "Bone White",
+"sweep": false
+},
+"72.035": {
+"hex": "#C2AA4E",
+"name": "Dead Flesh",
+"sweep": false
+},
+"72.036": {
+"hex": "#B16721",
+"name": "Bronze Brown",
+"sweep": false
+},
+"72.038": {
+"hex": "#A7691B",
+"name": "Scrofulous Brown",
+"sweep": false
+},
+"72.039": {
+"hex": "#AB7130",
+"name": "Plague Brown",
+"sweep": false
+},
+"72.040": {
+"hex": "#8E5D2A",
+"name": "Leather Brown",
+"sweep": false
+},
+"72.042": {
+"hex": "#A15B1C",
+"name": "Parasite Brown",
+"sweep": false
+},
+"72.043": {
+"hex": "#7C5223",
+"name": "Beasty Brown",
+"sweep": false
+},
+"72.044": {
+"hex": "#5E3526",
+"name": "Dark Fleshtone",
+"sweep": false
+},
+"72.045": {
+"hex": "#422B26",
+"name": "Charred Brown",
+"sweep": false
+},
+"72.047": {
+"hex": "#C4D1D1",
+"name": "Wolf Grey",
+"sweep": false
+},
+"72.048": {
+"hex": "#535D68",
+"name": "Sombre Grey",
+"sweep": false
+},
+"72.049": {
+"hex": "#9D9384",
+"name": "Stonewall Grey",
+"sweep": false
+},
+"72.050": {
+"hex": "#6E6D61",
+"name": "Neutral Grey",
+"sweep": false
+},
+"72.051": {
+"hex": "#010000",
+"name": "Black",
+"sweep": false
+},
+"72.052": {
+"hex": "#B4B9BA",
+"name": "Silver",
+"sweep": false
+},
+"72.053": {
+"hex": "#969CA3",
+"name": "Chainmail",
+"sweep": false
+},
+"72.054": {
+"hex": "#6E6F74",
+"name": "Dark Gunmetal",
+"sweep": false
+},
+"72.055": {
+"hex": "#E7B71F",
+"name": "Polished Gold",
+"sweep": false
+},
+"72.056": {
+"hex": "#D48F26",
+"name": "Glorious Gold",
+"sweep": false
+},
+"72.057": {
+"hex": "#A55D0B",
+"name": "Bright Bronze",
+"sweep": false
+},
+"72.058": {
+"hex": "#AC643B",
+"name": "Brassy Brass",
+"sweep": false
+},
+"72.059": {
+"hex": "#7B4831",
+"name": "Hammered Copper",
+"sweep": false
+},
+"72.060": {
+"hex": "#5A2F27",
+"name": "Tinny Tin",
+"sweep": false
+},
+"72.061": {
+"hex": "#9A7C4C",
+"name": "Khaki",
+"sweep": false
+},
+"72.062": {
+"hex": "#76572F",
+"name": "Earth",
+"sweep": false
+},
+"72.063": {
+"hex": "#996833",
+"name": "Desert Yellow",
+"sweep": false
+},
+"72.066": {
+"hex": "#95614E",
+"name": "Tan",
+"sweep": false
+},
+"72.067": {
+"hex": "#5A542A",
+"name": "Cayman Green",
+"sweep": false
+},
+"72.071": {
+"hex": "#936641",
+"name": "Barbarian Skin",
+"sweep": false
+},
+"72.076": {
+"hex": "#7061A8",
+"name": "Alien Purple",
+"sweep": false
+},
+"72.082": {
+"hex": "#FFFFFF",
+"name": "White",
+"sweep": false
+},
+"72.083": {
+"hex": "#A62355",
+"name": "Magenta",
+"sweep": false
+},
+"72.084": {
+"hex": "#00718A",
+"name": "Dark Turquoise",
+"sweep": false
+},
+"72.085": {
+"hex": "#ECA910",
+"name": "Yellow",
+"sweep": false
+},
+"72.086": {
+"hex": "#CE1316",
+"name": "Red",
+"sweep": false
+},
+"72.087": {
+"hex": "#6E3D73",
+"name": "Violet",
+"sweep": false
+},
+"72.088": {
+"hex": "#09528E",
+"name": "Blue",
+"sweep": false
+},
+"72.089": {
+"hex": "#087033",
+"name": "Green",
+"sweep": false
+},
+"72.090": {
+"hex": "#3D644B",
+"name": "Black Green",
+"sweep": false
+},
+"72.091": {
+"hex": "#543E28",
+"name": "Sepia",
+"sweep": false
+},
+"72.093": {
+"hex": "#5C2D26",
+"name": "Skin",
+"sweep": false
+},
+"72.094": {
+"hex": "#010000",
+"name": "Black",
+"sweep": false
+},
+"72.095": {
+"hex": "#CCD9F1",
+"name": "Glacier Blue",
+"sweep": false
+},
+"72.096": {
+"hex": "#85C7A9",
+"name": "Verdigris",
+"sweep": false
+},
+"72.098": {
+"hex": "#EAD7B9",
+"name": "Elfic Flesh",
+"sweep": false
+},
+"72.100": {
+"hex": "#E58A6A",
+"name": "Rosy Flesh",
+"sweep": false
+},
+"72.101": {
+"hex": "#FDF2DB",
+"name": "Off-White",
+"sweep": false
+},
+"72.102": {
+"hex": "#7A93A2",
+"name": "Steel Grey",
+"sweep": false
+},
+"72.103": {
+"hex": "#F0E638",
+"name": "Fluorescent Yellow",
+"sweep": false
+},
+"72.104": {
+"hex": "#72B72B",
+"name": "Fluorescent Green",
+"sweep": false
+},
+"72.106": {
+"hex": "#C32122",
+"name": "Scarlet Blood",
+"sweep": false
+},
+"72.107": {
+"hex": "#C85C52",
+"name": "Anthea Skin",
+"sweep": false
+},
+"72.108": {
+"hex": "#933E47",
+"name": "Succubus Skin",
+"sweep": false
+},
+"72.109": {
+"hex": "#E9D558",
+"name": "Toxic Yellow",
+"sweep": false
+},
+"72.110": {
+"hex": "#F4963A",
+"name": "Sunset Orange",
+"sweep": false
+},
+"72.114": {
+"hex": "#B88BBD",
+"name": "Lustful Purple",
+"sweep": false
+},
+"72.115": {
+"hex": "#874325",
+"name": "Marrón Mugre",
+"sweep": false
+},
+"72.116": {
+"hex": "#2E1F35",
+"name": "Midnight Purple",
+"sweep": false
+},
+"72.117": {
+"hex": "#4F617C",
+"name": "Elfic Blue",
+"sweep": false
+},
+"72.120": {
+"hex": "#1A3E54",
+"name": "Abyssal Turquoise",
+"sweep": false
+},
+"72.121": {
+"hex": "#82C193",
+"name": "Ghost Green",
+"sweep": false
+},
+"72.122": {
+"hex": "#D5D90E",
+"name": "Bile Green",
+"sweep": false
+},
+"72.123": {
+"hex": "#324D2C",
+"name": "Angel Green",
+"sweep": false
+},
+"72.124": {
+"hex": "#5A2F24",
+"name": "Gorgon Brown",
+"sweep": false
+},
+"72.145": {
+"hex": "#676031",
+"name": "Dirty Grey",
+"sweep": false
+},
+"72.148": {
+"hex": "#B29F9D",
+"name": "Warm Grey",
+"sweep": false
+},
+"72.155": {
+"hex": "#363537",
+"name": "Charcoal",
+"sweep": false
+},
+"72.156": {
+"hex": "#E94E0E",
+"name": "Fluorescent Orange",
+"sweep": false
+},
+"72.157": {
+"hex": "#DC2E52",
+"name": "Fluorescent Red",
+"sweep": false
+},
+"72.158": {
+"hex": "#E8338B",
+"name": "Fluoresc. Magenta",
+"sweep": false
+},
+"72.159": {
+"hex": "#6E2579",
+"name": "Fluorescent Violet",
+"sweep": false
+},
+"72.160": {
+"hex": "#0083CB",
+"name": "Fluorescent Blue",
+"sweep": false
+},
+"72.161": {
+"hex": "#007075",
+"name": "Fluo. Cold Green",
+"sweep": false
+},
+"72.401": {
+"hex": "#B3B8B8",
+"name": "Templar White",
+"sweep": true
+},
+"72.402": {
+"hex": "#773A2C",
+"name": "Dwarf Skin",
+"sweep": true
+},
+"72.403": {
+"hex": "#F39D28",
+"name": "Imperial Yellow",
+"sweep": true
+},
+"72.404": {
+"hex": "#DA8716",
+"name": "Nuclear Yellow",
+"sweep": true
+},
+"72.405": {
+"hex": "#C7421A",
+"name": "Martian Orange",
+"sweep": true
+},
+"72.406": {
+"hex": "#A02823",
+"name": "Plasma Red",
+"sweep": true
+},
+"72.407": {
+"hex": "#76272A",
+"name": "Velvet Red",
+"sweep": true
+},
+"72.408": {
+"hex": "#C11A28",
+"name": "Cardinal Purple",
+"sweep": true
+},
+"72.409": {
+"hex": "#68293D",
+"name": "Deep Purple",
+"sweep": true
+},
+"72.410": {
+"hex": "#452F59",
+"name": "Gloomy Violet",
+"sweep": true
+},
+"72.411": {
+"hex": "#12437A",
+"name": "Mystic Blue",
+"sweep": true
+},
+"72.412": {
+"hex": "#303877",
+"name": "Storm Blue",
+"sweep": true
+},
+"72.413": {
+"hex": "#373255",
+"name": "Omega Blue",
+"sweep": true
+},
+"72.414": {
+"hex": "#07505A",
+"name": "Caribbean Turquo.",
+"sweep": true
+},
+"72.415": {
+"hex": "#566F30",
+"name": "Orc Skin",
+"sweep": true
+},
+"72.416": {
+"hex": "#035A30",
+"name": "Troll Green",
+"sweep": true
+},
+"72.417": {
+"hex": "#055540",
+"name": "Snake Green",
+"sweep": true
+},
+"72.418": {
+"hex": "#21362A",
+"name": "Lizard Green",
+"sweep": true
+},
+"72.419": {
+"hex": "#46482B",
+"name": "Plague Green",
+"sweep": true
+},
+"72.420": {
+"hex": "#5D3E24",
+"name": "Wasteland Brown",
+"sweep": true
+},
+"72.421": {
+"hex": "#4D2922",
+"name": "Copper Brown",
+"sweep": true
+},
+"72.422": {
+"hex": "#2D575C",
+"name": "Space Grey",
+"sweep": true
+},
+"72.423": {
+"hex": "#292221",
+"name": "Black Lotus",
+"sweep": true
+},
+"73.200": {
+"hex": "#8C6129",
+"name": "Sepia",
+"sweep": false
+},
+"73.201": {
+"hex": "#333034",
+"name": "Black",
+"sweep": false
+},
+"73.203": {
+"hex": "#736052",
+"name": "Umber",
+"sweep": false
+},
+"73.204": {
+"hex": "#B67C75",
+"name": "Flesh",
+"sweep": false
+},
+"73.206": {
+"hex": "#D55E85",
+"name": "Red",
+"sweep": false
+},
+"73.207": {
+"hex": "#0E6DB5",
+"name": "Blue",
+"sweep": false
+},
+"73.208": {
+"hex": "#DBDB00",
+"name": "Yellow",
+"sweep": false
+},
+"73.209": {
+"hex": "#562E82",
+"name": "Violet",
+"sweep": false
+}
+}

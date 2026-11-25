@@ -8,6 +8,7 @@ import { MAX_LAYERS, type LayerItem, type LayerState, type SavedSwatch } from '.
 export interface LayerDatum {
   item: LayerItem
   name: string
+  code: string
   hex: string
   curve: number[]
   hiding: number
@@ -20,15 +21,15 @@ interface Props {
   hasMix: boolean
   state: LayerState
   setLayer: (next: LayerState | ((prev: LayerState) => LayerState)) => void
-  paints: UsablePaint[]
+  mine: UsablePaint[]
   save: (swatch: Omit<SavedSwatch, 'id'>) => void
 }
 
 const STRIP = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
 
-export const LayerBench = ({ base, data, steps, hasMix, state, setLayer, paints, save }: Props) => {
-  const black = paints.find((p) => p.code === '70.950')
-  const white = paints.find((p) => p.code === '70.951')
+export const LayerBench = ({ base, data, steps, hasMix, state, setLayer, mine, save }: Props) => {
+  const black = mine.find((p) => p.code === '70.950')
+  const white = mine.find((p) => p.code === '70.951')
   const result = steps[steps.length - 1]
   const last = data[data.length - 1]
 
@@ -63,8 +64,8 @@ export const LayerBench = ({ base, data, steps, hasMix, state, setLayer, paints,
       <div className="py-4">
         <p className="mb-3 text-dim">Choose the base coat: press + on any paint in the list, or start from a primer color.</p>
         <div className="flex gap-2">
-          {black && <button type="button" className="btn" onClick={() => setLayer((p) => ({ ...p, base: black.code }))}>Black base</button>}
-          {white && <button type="button" className="btn" onClick={() => setLayer((p) => ({ ...p, base: white.code }))}>White base</button>}
+          {black && <button type="button" className="btn" onClick={() => setLayer((p) => ({ ...p, base: black.id }))}>Black base</button>}
+          {white && <button type="button" className="btn" onClick={() => setLayer((p) => ({ ...p, base: white.id }))}>White base</button>}
         </div>
       </div>
     )
@@ -79,10 +80,10 @@ export const LayerBench = ({ base, data, steps, hasMix, state, setLayer, paints,
             <span className="min-w-0 flex-1 truncate">Base: {base.name} <span className="font-code text-dim">{base.code}</span></span>
             <button type="button" className="btn" onClick={() => setLayer((p) => ({ ...p, base: '' }))}>Change base</button>
           </li>
-          {data.map(({ item, name, hex }, n) => (
+          {data.map(({ item, name, code, hex }, n) => (
             <li key={item.id} className="flex flex-wrap items-center gap-2">
               <span className="h-8 w-8 shrink-0 rounded" style={{ background: hex }} />
-              <span className="w-40 min-w-0 truncate">{n + 1}. {name} <span className="font-code text-dim">{item.source === 'mix' ? '' : item.source}</span></span>
+              <span className="w-40 min-w-0 truncate">{n + 1}. {name} <span className="font-code text-dim">{code}</span></span>
               <input type="range" min={0} max={100} step={1} className="min-w-24 flex-1" aria-label={`Opacity of ${name}`} value={Math.round(item.opacity * 100)} onChange={(e) => patch(item.id, Number(e.target.value) / 100)} />
               <span className="w-11 text-right font-semibold tnum">{Math.round(item.opacity * 100)}%</span>
               <button type="button" className="p-1 text-dim hover:text-text" aria-label={`Paint ${name} earlier`} disabled={n === 0} onClick={() => move(item.id, -1)}><ArrowUp size={15} /></button>
@@ -115,7 +116,7 @@ export const LayerBench = ({ base, data, steps, hasMix, state, setLayer, paints,
         {result && <p className="text-lg font-semibold tnum">{result}</p>}
         {overWhite && <p className="flex items-center gap-2 text-sm text-dim"><span className="h-5 w-5 rounded" style={{ background: overWhite }} />Same coats over white: <span className="text-text tnum">{overWhite}</span></p>}
         <div className="flex gap-2">
-          <button type="button" className="btn-main flex-1" disabled={data.length === 0} onClick={() => save({ kind: 'layer', hex: result, steps, recipe: [`Base ${base.name} ${base.code}`, ...data.map((l) => `${l.name}${l.item.source === 'mix' ? '' : ` ${l.item.source}`} ${Math.round(l.item.opacity * 100)}%`)].join(', then ') })}>Save swatch</button>
+          <button type="button" className="btn-main flex-1" disabled={data.length === 0} onClick={() => save({ kind: 'layer', hex: result, steps, recipe: [`Base ${base.name} ${base.code}`, ...data.map((l) => `${[l.name, l.code].filter(Boolean).join(' ')} ${Math.round(l.item.opacity * 100)}%`)].join(', then ') })}>Save swatch</button>
           <button type="button" className="btn" onClick={() => setLayer({ base: '', layers: [] })}>Clear</button>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { applyFilter, EMPTY_FILTER, Filters, type FilterState } from '@/componen
 import { PaintLabel } from '@/components/PaintLabel'
 import { Segmented } from '@/components/Segmented'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { loadLibrary } from '@/lib/library'
 import { curveOf, layerSteps, mixCurve, mixHex } from '@/lib/paintModel'
 import type { MixPart, UsablePaint } from '@/lib/types'
 import { MAX_LAYERS, MAX_MIX, type BenchMode, type LayerState, type Marker, type MixItem, type SavedSwatch } from './bench'
@@ -26,23 +27,52 @@ interface Props {
 type Surround = 'dark' | 'grey' | 'white'
 const SURROUND: Record<Surround, string> = { dark: '#262626', grey: '#777777', white: '#f2f2f2' }
 
-export const MixerTab = ({ paints, mixItems, setMixItems, probe }: Props) => {
+type Scope = 'mine' | 'all'
+const PAGE = 200
+
+export const MixerTab = ({ paints: mine, mixItems, setMixItems, probe }: Props) => {
+  const [scope, setScope] = useLocalStorage<Scope>('pml.scope', 'mine')
+  const [library, setLibrary] = useState<UsablePaint[]>([])
+  const [libraryState, setLibraryState] = useState<'idle' | 'loading' | 'ready' | 'failed'>('idle')
+  const [limit, setLimit] = useState(PAGE)
+  const [layer, setLayer] = useLocalStorage<LayerState>('pml.layer', { base: '', layers: [] })
   const [view, setView] = useLocalStorage<'3d' | '2d'>('pml.view', '3d')
   const [surround, setSurround] = useLocalStorage<Surround>('pml.surround', 'dark')
   const [mode, setMode] = useState<BenchMode>(probe ? 'match' : 'mix')
   const [open, setOpen] = useState(true)
   const [filter, setFilter] = useState<FilterState>(EMPTY_FILTER)
   const [selected, setSelected] = useState<string | null>(null)
-  const [layer, setLayer] = useLocalStorage<LayerState>('pml.layer', { base: '', layers: [] })
   const [saved, setSaved] = useLocalStorage<SavedSwatch[]>('pml.saved', [])
   const [target, setTarget] = useState(probe ?? '#6B7A3A')
 
   useEffect(() => {
     if (selected && window.matchMedia('(min-width: 1024px)').matches) document.getElementById(`paint-${selected}`)?.scrollIntoView({ block: 'nearest' })
-  }, [selected])
+  }, [selected, limit])
 
-  const byCode = useMemo(() => new Map(paints.map((p) => [p.code, p])), [paints])
+  const stored = useMemo(() => [...mixItems.map((i) => i.code), layer.base, ...layer.layers.map((l) => l.source)].some((id) => id.includes('|')), [mixItems, layer])
+  const wanted = scope === 'all' || stored
+  useEffect(() => {
+    if (!wanted) return
+    let live = true
+    setLibraryState((s) => (s === 'ready' ? s : 'loading'))
+    loadLibrary().then(
+      (rows) => {
+        if (!live) return
+        setLibrary(rows)
+        setLibraryState('ready')
+      },
+      () => live && setLibraryState('failed'),
+    )
+    return () => {
+      live = false
+    }
+  }, [wanted])
+
+  const everything = useMemo(() => [...mine, ...library], [mine, library])
+  const paints = scope === 'all' ? everything : mine
+  const byCode = useMemo(() => new Map(everything.map((p) => [p.id, p])), [everything])
   const shown = useMemo(() => applyFilter(paints, filter), [paints, filter])
+  const listed = shown.slice(0, limit)
 
   const mix = useMemo(() => mixItems.flatMap((i) => (byCode.has(i.code) ? [{ paint: byCode.get(i.code) as UsablePaint, parts: i.parts }] : [])), [mixItems, byCode])
   const mixParts = useMemo<MixPart[]>(() => mix.map((i) => ({ hex: i.paint.hex, parts: i.parts, strength: i.paint.strength })), [mix])
@@ -52,9 +82,9 @@ export const MixerTab = ({ paints, mixItems, setMixItems, probe }: Props) => {
   const layerData = useMemo(
     () =>
       layer.layers.flatMap((l) => {
-        if (l.source === 'mix') return mixed ? [{ item: l, name: 'Current mix', hex: mixed, curve: mixParts.length > 1 ? mixCurve(mixParts) : curveOf(mixed).R, hiding: 1 }] : []
+        if (l.source === 'mix') return mixed ? [{ item: l, name: 'Current mix', code: '', hex: mixed, curve: mixParts.length > 1 ? mixCurve(mixParts) : curveOf(mixed).R, hiding: 1 }] : []
         const p = byCode.get(l.source)
-        return p ? [{ item: l, name: p.name, hex: p.hex, curve: curveOf(p.hex).R, hiding: p.hiding }] : []
+        return p ? [{ item: l, name: p.name, code: p.code, hex: p.hex, curve: curveOf(p.hex).R, hiding: p.hiding }] : []
       }),
     [layer.layers, mixed, mixParts, byCode],
   )
@@ -97,16 +127,43 @@ export const MixerTab = ({ paints, mixItems, setMixItems, probe }: Props) => {
     [mode, byCode, setLayer, setMixItems],
   )
 
+  const changeFilter = (next: FilterState): void => {
+    setFilter(next)
+    setLimit(PAGE)
+  }
+  /** A dot picked on the graph must also be reachable in the list. */
+  const pick = useCallback(
+    (id: string | null) => {
+      setSelected(id)
+      const at = shown.findIndex((p) => p.id === id)
+      if (at >= 0) setLimit((l) => Math.max(l, at + 20))
+    },
+    [shown],
+  )
+
   const addLabel = mode === 'layer' ? (layer.base ? 'Add as next layer' : 'Use as base') : mode === 'match' ? 'Use as target' : 'Add to mix'
   const full = mode === 'layer' ? layer.layers.length >= MAX_LAYERS : mode === 'mix' ? mix.length >= MAX_MIX : false
   const save = (swatch: Omit<SavedSwatch, 'id'>): void => setSaved((prev) => [{ ...swatch, id: crypto.randomUUID() }, ...prev].slice(0, 60))
 
   return (
-    <div className="grid min-h-0 lg:h-full lg:grid-cols-[3fr_2fr]">
+    <div className="grid min-h-0 grid-cols-[minmax(0,1fr)] lg:h-full lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
       <section className="flex min-h-0 min-w-0 flex-col border-line lg:border-r" aria-label="Color graph and bench">
         <div className="flex flex-wrap items-center gap-3 px-4 py-2">
           <Segmented label="View" value={view} onChange={setView} options={[{ value: '3d', label: '3D sphere' }, { value: '2d', label: '2D wheel' }]} />
-          <span className="text-sm text-dim tnum">{shown.length} paints</span>
+          <Segmented
+            label="Paints shown"
+            value={scope}
+            onChange={(s) => {
+              setScope(s)
+              setFilter((f) => ({ ...EMPTY_FILTER, sort: f.sort, group: f.group }))
+              setSelected(null)
+              setLimit(PAGE)
+            }}
+            options={[
+              { value: 'mine', label: `My paints ${mine.length}` },
+              { value: 'all', label: libraryState === 'loading' ? 'All paints, loading' : `All paints ${libraryState === 'ready' ? everything.length.toLocaleString('en') : ''}`.trim() },
+            ]}
+          />
           <label className="ml-auto flex items-center gap-2 text-sm text-dim">
             Background
             <select className="field" value={surround} onChange={(e) => setSurround(e.target.value as Surround)}>
@@ -119,10 +176,10 @@ export const MixerTab = ({ paints, mixItems, setMixItems, probe }: Props) => {
         <div className="h-[56vh] min-h-64 lg:h-auto lg:flex-1" style={{ background: SURROUND[surround] }}>
           {view === '3d' ? (
             <Suspense fallback={<p className="p-6 text-dim">Loading the sphere</p>}>
-              <ColorSphere points={shown} markers={markers} selected={selected} onSelect={setSelected} />
+              <ColorSphere points={shown} markers={markers} selected={selected} onSelect={pick} />
             </Suspense>
           ) : (
-            <ColorWheel points={shown} markers={markers} selected={selected} onSelect={setSelected} />
+            <ColorWheel points={shown} markers={markers} selected={selected} onSelect={pick} />
           )}
         </div>
         <div className="border-t border-line bg-panel">
@@ -143,8 +200,8 @@ export const MixerTab = ({ paints, mixItems, setMixItems, probe }: Props) => {
           </div>
           {open && (
             <div className="scroll max-h-[46vh] overflow-y-auto px-4 pb-4 lg:max-h-[40vh]">
-              {mode === 'mix' && <MixBench mix={mix} mixed={mixed} paints={paints} setMixItems={setMixItems} save={save} />}
-              {mode === 'layer' && <LayerBench base={base} data={layerData} steps={steps} hasMix={mixed !== null} state={layer} setLayer={setLayer} paints={paints} save={save} />}
+              {mode === 'mix' && <MixBench mix={mix} mixed={mixed} mine={mine} setMixItems={setMixItems} save={save} />}
+              {mode === 'layer' && <LayerBench base={base} data={layerData} steps={steps} hasMix={mixed !== null} state={layer} setLayer={setLayer} mine={mine} save={save} />}
               {mode === 'match' && (
                 <MatchBench
                   paints={paints}
@@ -164,18 +221,20 @@ export const MixerTab = ({ paints, mixItems, setMixItems, probe }: Props) => {
 
       <section className="flex min-h-0 min-w-0 flex-col" aria-label="Paints in the graph">
         <div className="border-b border-line p-3">
-          <Filters paints={paints} value={filter} onChange={setFilter} />
+          <Filters paints={paints} value={filter} onChange={changeFilter} />
+          {scope === 'all' && libraryState === 'failed' && <p role="alert" className="mt-2 text-sm">The other paints did not load. Reload the page to try again.</p>}
         </div>
-        <ul className="scroll grid flex-1 content-start gap-1.5 overflow-y-auto p-3">
-          {shown.map((p) => (
-            <li key={p.code} id={`paint-${p.code}`}>
-              <PaintLabel hex={p.hex} code={p.code} name={p.name} sub={`${p.brand}, ${p.line}`} selected={p.code === selected} onClick={() => setSelected(p.code === selected ? null : p.code)}>
-                <button type="button" className="shrink-0 px-3 hover:bg-black/10" aria-label={`${addLabel}: ${p.name} ${p.code}`} title={addLabel} disabled={full} onClick={() => add(p.code)}>
+        <ul className="scroll grid flex-1 grid-cols-[minmax(0,1fr)] content-start gap-1.5 overflow-y-auto p-3">
+          {listed.map((p) => (
+            <li key={p.id} id={`paint-${p.id}`}>
+              <PaintLabel hex={p.hex} metal={p.metal} code={p.code} name={p.name} sub={`${scope === 'all' && p.owned ? 'You own this. ' : ''}${p.brand}, ${p.line}`} selected={p.id === selected} onClick={() => setSelected(p.id === selected ? null : p.id)}>
+                <button type="button" className="shrink-0 px-3 hover:bg-black/10" aria-label={`${addLabel}: ${p.name} ${p.code}`} title={addLabel} disabled={full} onClick={() => add(p.id)}>
                   <Plus size={18} />
                 </button>
               </PaintLabel>
             </li>
           ))}
+          {shown.length > listed.length && <li><button type="button" className="btn w-full" onClick={() => setLimit(limit + PAGE * 2)}>Show more, {(shown.length - listed.length).toLocaleString('en')} left</button></li>}
           {shown.length === 0 && <li className="p-4 text-dim">No paint matches these filters. Clear them to see all {paints.length}.</li>}
         </ul>
       </section>

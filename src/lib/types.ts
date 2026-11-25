@@ -25,7 +25,23 @@ export interface PaintOverride {
   checked?: boolean
 }
 
+/** Swatch read from the Vallejo True Metallic Metal chart: the sweep from shadow to highlight. */
+export interface MetalSwatch {
+  code: string
+  name: string
+  role: string
+  body: string
+  shadow: string
+  highlight: string
+  angle: number
+  stops: string[]
+}
+
 export interface Paint extends PaintRecord {
+  /** Unique key. The code for owned paints; brand plus code or name for the library, where some paints have no code. */
+  id: string
+  owned: boolean
+  metal: MetalSwatch | null
   hex: string | null
   hexSource: string
   /** Other reference values for the same code, for cross-checking. */

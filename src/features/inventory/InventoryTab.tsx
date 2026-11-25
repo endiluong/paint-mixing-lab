@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Download } from 'lucide-react'
 import { applyFilter, EMPTY_FILTER, Filters, type FilterState } from '@/components/Filters'
-import { isHex } from '@/lib/color'
+import { isHex, paintBackground } from '@/lib/color'
 import type { Paint, PaintOverride } from '@/lib/types'
 
 interface Props {
@@ -65,7 +65,7 @@ export const InventoryTab = ({ paints, change, reset }: Props) => {
 
   return (
     <div className="flex min-h-0 flex-col lg:h-full">
-      <div className="grid gap-3 border-b border-line p-4 lg:grid-cols-[minmax(0,560px)_1fr]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 border-b border-line p-4 lg:grid-cols-[minmax(0,560px)_minmax(0,1fr)]">
         <Filters paints={paints} value={filter} onChange={setFilter} />
         <div className="flex flex-wrap items-start gap-3">
           <select className="field" aria-label="Show" value={only} onChange={(e) => setOnly(e.target.value as typeof only)}>
@@ -109,7 +109,7 @@ interface RowProps {
 const Row = ({ paint: p, open, toggle, change, reset }: RowProps) => (
   <>
     <tr className="border-b border-line/60">
-      <td className="px-3 py-1.5"><span className="block h-9 w-14 rounded" style={{ background: p.hex ?? 'repeating-linear-gradient(45deg,#555 0 5px,#666 5px 10px)' }} /></td>
+      <td className="px-3 py-1.5"><span className="block h-9 w-14 rounded" style={{ background: paintBackground(p.hex, p.metal) }} /></td>
       <td className="font-code whitespace-nowrap px-3 text-base font-bold">{p.code}</td>
       <td className="whitespace-nowrap px-3">{p.name}</td>
       <td className="px-3"><HexInput paint={p} onChange={(hex) => change({ hex })} /></td>
@@ -133,6 +133,12 @@ const Row = ({ paint: p, open, toggle, change, reset }: RowProps) => (
               <img src={`./labels/${p.code}.jpg`} alt={`Label photo of ${p.name} ${p.code}`} className="block h-52 rounded" loading="lazy" />
               <figcaption className="mt-1 text-xs text-dim">Your photo, {p.seen}</figcaption>
             </figure>
+            {p.metal && (
+              <figure className="m-0">
+                <div className="h-32 w-44 rounded" style={{ background: paintBackground(p.hex, p.metal) }} />
+                <figcaption className="mt-1 text-xs text-dim">Vallejo chart, {p.metal.role}<br />Highlight {p.metal.highlight}, shadow {p.metal.shadow}</figcaption>
+              </figure>
+            )}
             <div className="min-w-64 max-w-md">
               <h4 className="mb-2 font-semibold">Hex references</h4>
               <ul className="grid gap-1.5">

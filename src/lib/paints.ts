@@ -1,15 +1,23 @@
 import openData from '@/data/paints.json'
+import squidmarData from '@/data/squidmar.json'
+import tmmData from '@/data/tmm.json'
 import { hexToLab, isHex, labDistance } from './color'
-import type { Paint, PaintOverride, PaintRecord, UsablePaint } from './types'
+import type { MetalSwatch, Paint, PaintOverride, PaintRecord, UsablePaint } from './types'
 
 /** Optional file: without it every paint falls back to the open dataset. */
 const padFiles = import.meta.glob<Record<string, string>>('@/data/paintpad-hex.json', { eager: true, import: 'default' })
 const padHex: Record<string, string> = Object.values(padFiles)[0] ?? {}
 
+export const TMM = tmmData as MetalSwatch[]
+export const SQUIDMAR = squidmarData as { code: string; name: string; set: string; hex: string; metal: MetalSwatch | null }[]
+const tmmByCode = new Map(TMM.map((m) => [m.code, m]))
+
 export const RECORDS = openData as PaintRecord[]
 
 const build = (record: PaintRecord, override: PaintOverride): Paint => {
+  const metal = tmmByCode.get(record.code) ?? null
   const sources = [
+    { hex: metal?.body ?? null, source: 'Vallejo TMM chart' },
     { hex: padHex[record.code] ?? null, source: 'Paint Pad' },
     { hex: record.openHex, source: 'miniature-paints dataset' },
     { hex: record.wikiHex, source: 'Hobby-Paints-Wiki' },
@@ -20,6 +28,9 @@ const build = (record: PaintRecord, override: PaintOverride): Paint => {
   const lab = chosen ? hexToLab(chosen.hex) : null
   return {
     ...record,
+    id: record.code,
+    owned: true,
+    metal: mine ? null : metal,
     hex: chosen?.hex ?? null,
     hexSource: chosen?.source ?? 'none',
     references,

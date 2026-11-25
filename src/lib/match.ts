@@ -64,7 +64,7 @@ export const findMixes = (target: string, paints: UsablePaint[], maxPaints: 2 | 
     const three: Scored[] = []
     for (const base of found.slice(0, 24)) {
       for (const paint of pool) {
-        if (base.items.some((x) => x.paint.code === paint.code)) continue
+        if (base.items.some((x) => x.paint.id === paint.id)) continue
         for (const extra of THIRD) three.push(score([...base.items.map((x) => ({ ...x, parts: x.parts * 2 })), { paint, parts: extra }], lab))
       }
     }
@@ -74,7 +74,7 @@ export const findMixes = (target: string, paints: UsablePaint[], maxPaints: 2 | 
   const seen = new Set<string>()
   const out: Recipe[] = []
   for (const f of found) {
-    const key = f.items.map((x) => x.paint.code).sort().join('+')
+    const key = f.items.map((x) => x.paint.id).sort().join('+')
     if (seen.has(key)) continue
     seen.add(key)
     out.push({ items: f.items, hex: curveToHex(f.R), distance: f.distance })

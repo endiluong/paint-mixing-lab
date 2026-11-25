@@ -1,11 +1,12 @@
 export interface MixItem {
+  /** Paint id */
   code: string
   parts: number
 }
 
 export interface LayerItem {
   id: string
-  /** A paint code, or "mix" for whatever is on the mixing bench. */
+  /** A paint id, or "mix" for whatever is on the mixing bench. */
   source: string
   opacity: number
 }
@@ -35,9 +36,11 @@ export interface Marker {
 }
 
 export interface GraphPoint {
+  id: string
   code: string
   name: string
   hex: string
+  owned: boolean
 }
 
 export interface GraphProps {

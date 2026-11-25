@@ -9,7 +9,8 @@ import type { MixItem, SavedSwatch } from './bench'
 interface Props {
   mix: RecipeItem[]
   mixed: string | null
-  paints: UsablePaint[]
+  /** Paints the user owns, for "closest paint you own". */
+  mine: UsablePaint[]
   setMixItems: (next: MixItem[]) => void
   save: (swatch: Omit<SavedSwatch, 'id'>) => void
 }
@@ -20,10 +21,10 @@ const PRESETS: Record<number, number[][]> = {
   4: [[1, 1, 1, 1], [3, 1, 1, 1], [1, 3, 1, 1], [1, 1, 3, 1], [1, 1, 1, 3], [2, 2, 1, 1], [2, 1, 2, 1], [1, 2, 2, 1], [1, 1, 2, 2]],
 }
 
-export const MixBench = ({ mix, mixed, paints, setMixItems, save }: Props) => {
+export const MixBench = ({ mix, mixed, mine, setMixItems, save }: Props) => {
   const total = mix.reduce((s, i) => s + i.parts, 0)
-  const set = (code: string, parts: number): void => setMixItems(mix.map((i) => ({ code: i.paint.code, parts: i.paint.code === code ? Math.min(20, Math.max(1, parts)) : i.parts })))
-  const nearest = useMemo(() => (mixed && mix.length > 1 ? closestPaints(mixed, paints, 1)[0] : null), [mixed, mix.length, paints])
+  const set = (code: string, parts: number): void => setMixItems(mix.map((i) => ({ code: i.paint.id, parts: i.paint.id === code ? Math.min(20, Math.max(1, parts)) : i.parts })))
+  const nearest = useMemo(() => (mixed && mix.length > 1 ? closestPaints(mixed, mine, 1)[0] : null), [mixed, mix.length, mine])
   const presets = useMemo(
     () =>
       (PRESETS[mix.length] ?? []).map((ratio) => ({
@@ -40,26 +41,26 @@ export const MixBench = ({ mix, mixed, paints, setMixItems, save }: Props) => {
       <div className="min-w-0">
         <ul className="grid gap-2">
           {mix.map(({ paint, parts }) => (
-            <li key={paint.code} className="flex items-center gap-2">
+            <li key={paint.id} className="flex items-center gap-2">
               <span className="h-8 w-8 shrink-0 rounded" style={{ background: paint.hex }} />
-              <span className="min-w-0 flex-1 truncate">{paint.name} <span className="font-code text-dim">{paint.code}</span></span>
-              <button type="button" className="btn px-2" aria-label={`Less ${paint.name}`} onClick={() => set(paint.code, parts - 1)} disabled={parts <= 1}><Minus size={14} /></button>
+              <span className="min-w-0 flex-1 truncate">{paint.name} <span className="font-code text-dim">{paint.code}</span>{!paint.owned && <span className="text-xs text-dim"> not owned</span>}</span>
+              <button type="button" className="btn px-2" aria-label={`Less ${paint.name}`} onClick={() => set(paint.id, parts - 1)} disabled={parts <= 1}><Minus size={14} /></button>
               <span className="w-8 text-center text-base font-semibold tnum">{parts}</span>
-              <button type="button" className="btn px-2" aria-label={`More ${paint.name}`} onClick={() => set(paint.code, parts + 1)} disabled={parts >= 20}><Plus size={14} /></button>
+              <button type="button" className="btn px-2" aria-label={`More ${paint.name}`} onClick={() => set(paint.id, parts + 1)} disabled={parts >= 20}><Plus size={14} /></button>
               <span className="w-11 text-right text-sm text-dim tnum">{Math.round((parts / total) * 100)}%</span>
-              <button type="button" className="p-1.5 text-dim hover:text-text" aria-label={`Remove ${paint.name}`} onClick={() => setMixItems(mix.filter((i) => i.paint.code !== paint.code).map((i) => ({ code: i.paint.code, parts: i.parts })))}><X size={16} /></button>
+              <button type="button" className="p-1.5 text-dim hover:text-text" aria-label={`Remove ${paint.name}`} onClick={() => setMixItems(mix.filter((i) => i.paint.id !== paint.id).map((i) => ({ code: i.paint.id, parts: i.parts })))}><X size={16} /></button>
             </li>
           ))}
         </ul>
         <div className="mt-3 flex h-3 overflow-hidden rounded" aria-hidden>
-          {mix.map(({ paint, parts }) => <span key={paint.code} style={{ background: paint.hex, flex: parts }} />)}
+          {mix.map(({ paint, parts }) => <span key={paint.id} style={{ background: paint.hex, flex: parts }} />)}
         </div>
         {presets.length > 0 && (
           <>
             <h3 className="mb-1.5 mt-4 text-sm text-dim">Test swatches, in parts. Press one to use it.</h3>
             <div className="grid grid-cols-5 gap-1 sm:grid-cols-9">
               {presets.map(({ ratio, hex }) => (
-                <button key={ratio.join(':')} type="button" className="flex h-14 items-end justify-center rounded pb-1 text-[11px] font-semibold tnum" style={{ background: hex, color: inkOn(hex) }} title={hex} onClick={() => setMixItems(mix.map((i, n) => ({ code: i.paint.code, parts: ratio[n] })))}>
+                <button key={ratio.join(':')} type="button" className="flex h-14 items-end justify-center rounded pb-1 text-[11px] font-semibold tnum" style={{ background: hex, color: inkOn(hex) }} title={hex} onClick={() => setMixItems(mix.map((i, n) => ({ code: i.paint.id, parts: ratio[n] })))}>
                   {ratio.join(':')}
                 </button>
               ))}
