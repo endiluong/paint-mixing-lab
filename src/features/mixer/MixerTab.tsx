@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
-import { ChevronDown, ChevronUp, Pencil, Plus, Trash2 } from 'lucide-react'
+import { ChevronDown, ChevronUp, Minus, Pencil, Plus, Trash2 } from 'lucide-react'
 import { applyFilter, EMPTY_FILTER, Filters, type FilterState } from '@/components/Filters'
 import { OwnedTag, PaintLabel, RangeTag } from '@/components/PaintLabel'
 import { Segmented } from '@/components/Segmented'
@@ -36,6 +36,7 @@ const SURROUND: Record<Surround, string> = { dark: '#262626', grey: '#777777', w
 
 type Scope = 'mine' | 'all'
 const PAGE = 200
+const RED = 'bg-[#C62828] text-white hover:bg-[#A61F1F]'
 
 export const MixerTab = ({ paints: mine, collection, mixItems, setMixItems, probe, create, edit, remove, own }: Props) => {
   const [scope, setScope] = usePersisted<Scope>('pml.scope', 'mine')
@@ -151,6 +152,9 @@ export const MixerTab = ({ paints: mine, collection, mixItems, setMixItems, prob
 
   const addLabel = mode === 'layer' ? (layer.base ? 'Add as next layer' : 'Use as base') : mode === 'match' ? 'Use as target' : 'Add to mix'
   const full = mode === 'layer' ? layer.layers.length >= MAX_LAYERS : mode === 'mix' ? mix.length >= MAX_MIX : false
+  /** On the mixing bench the button of a paint already in the mix takes it out again. */
+  const inMix = useMemo(() => new Set(mode === 'mix' || mode === 'saved' ? mix.map((i) => i.paint.id) : []), [mode, mix])
+  const takeOut = (id: string): void => setMixItems((prev) => prev.filter((i) => i.code !== id))
   const save = (swatch: Omit<SavedSwatch, 'id'>): void => setSaved((prev) => [{ ...swatch, id: crypto.randomUUID() }, ...prev].slice(0, 60))
 
   return (
@@ -240,9 +244,15 @@ export const MixerTab = ({ paints: mine, collection, mixItems, setMixItems, prob
           {listed.map((p) => (
             <li key={p.id} id={`paint-${p.id}`}>
               <PaintLabel hex={p.hex} metal={p.metal} code={p.code} name={p.name} brand={p.brand} line={p.line} owned={p.owned} selected={p.id === selected} onClick={() => setSelected(p.id === selected ? null : p.id)}>
-                <button type="button" className="shrink-0 px-3 hover:bg-black/10 focus-visible:-outline-offset-2 focus-visible:outline-black" aria-label={`${addLabel}: ${p.name} ${p.code}`} title={addLabel} disabled={full} onClick={() => add(p.id)}>
-                  <Plus size={18} />
-                </button>
+                {inMix.has(p.id) ? (
+                  <button type="button" className={`shrink-0 px-3 focus-visible:-outline-offset-4 ${RED}`} aria-label={`Remove from mix: ${p.name} ${p.code}`} title="Remove from mix" onClick={() => takeOut(p.id)}>
+                    <Minus size={18} strokeWidth={3} />
+                  </button>
+                ) : (
+                  <button type="button" className="shrink-0 px-3 hover:bg-black/10 focus-visible:-outline-offset-2 focus-visible:outline-black" aria-label={`${addLabel}: ${p.name} ${p.code}`} title={addLabel} disabled={full} onClick={() => add(p.id)}>
+                    <Plus size={18} />
+                  </button>
+                )}
               </PaintLabel>
             </li>
           ))}
@@ -259,7 +269,9 @@ export const MixerTab = ({ paints: mine, collection, mixItems, setMixItems, prob
               </div>
             </div>
             <div className="mt-2 flex flex-wrap gap-2">
-              <button type="button" className={chosen.owned ? 'btn-main' : 'btn'} disabled={full} onClick={() => add(chosen.id)}>{addLabel}</button>
+              {inMix.has(chosen.id) ? (
+                <button type="button" className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold ${RED}`} onClick={() => takeOut(chosen.id)}><Minus size={15} strokeWidth={3} />Remove from mix</button>
+              ) : <button type="button" className={chosen.owned ? 'btn-main' : 'btn'} disabled={full} onClick={() => add(chosen.id)}>{addLabel}</button>}
               {chosen.owned ? (
                 <>
                   <button type="button" className="btn" onClick={() => edit(chosen.id)}><Pencil size={15} />Edit</button>
