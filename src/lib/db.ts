@@ -153,7 +153,7 @@ const changed = (work: (paints: IDBObjectStore) => void): void => {
   if (!asked) {
     asked = true
     // Ask the browser not to clear the collection when the disk is short of space
-    void navigator.storage?.persist?.().catch(() => false)
+    void globalThis.navigator?.storage?.persist?.().catch(() => false)
   }
   run<void>('readwrite', work).then(
     () => channel?.postMessage('paints'),
