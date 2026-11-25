@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
-import { ChevronDown, ChevronUp, Minus, Pencil, Plus, Trash2 } from 'lucide-react'
+import { Bookmark, ChevronDown, ChevronUp, Minus, Pencil, Plus } from 'lucide-react'
 import { applyFilter, EMPTY_FILTER, Filters, type FilterState } from '@/components/Filters'
 import { OwnedTag, PaintLabel, RangeTag } from '@/components/PaintLabel'
 import { Segmented } from '@/components/Segmented'
@@ -36,6 +36,8 @@ const SURROUND: Record<Surround, string> = { dark: '#262626', grey: '#777777', w
 
 type Scope = 'mine' | 'all'
 const PAGE = 200
+/** Yellow, with an edge dark enough to see on the light label strip. */
+const BOOKMARK = { edge: '#946200', fill: '#FFC400' }
 const RED = 'bg-[#C62828] text-white hover:bg-[#A61F1F]'
 
 export const MixerTab = ({ paints: mine, collection, mixItems, setMixItems, probe, create, edit, remove, own }: Props) => {
@@ -244,6 +246,16 @@ export const MixerTab = ({ paints: mine, collection, mixItems, setMixItems, prob
           {listed.map((p) => (
             <li key={p.id} id={`paint-${p.id}`}>
               <PaintLabel hex={p.hex} metal={p.metal} code={p.code} name={p.name} brand={p.brand} line={p.line} owned={p.owned} selected={p.id === selected} onClick={() => setSelected(p.id === selected ? null : p.id)}>
+                <button
+                  type="button"
+                  className="shrink-0 px-2.5 hover:bg-black/10 focus-visible:-outline-offset-2 focus-visible:outline-black"
+                  aria-pressed={p.owned}
+                  aria-label={`In my paints: ${p.name} ${p.code}`}
+                  title={p.owned ? 'Remove from my paints' : 'Add to my paints'}
+                  onClick={() => (p.owned ? remove(p.id) : own(p))}
+                >
+                  <Bookmark size={19} color={BOOKMARK.edge} fill={p.owned ? BOOKMARK.fill : 'none'} />
+                </button>
                 {inMix.has(p.id) ? (
                   <button type="button" className={`shrink-0 px-3 focus-visible:-outline-offset-4 ${RED}`} aria-label={`Remove from mix: ${p.name} ${p.code}`} title="Remove from mix" onClick={() => takeOut(p.id)}>
                     <Minus size={18} strokeWidth={3} />
@@ -271,13 +283,8 @@ export const MixerTab = ({ paints: mine, collection, mixItems, setMixItems, prob
             <div className="mt-2 flex flex-wrap gap-2">
               {inMix.has(chosen.id) ? (
                 <button type="button" className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold ${RED}`} onClick={() => takeOut(chosen.id)}><Minus size={15} strokeWidth={3} />Remove from mix</button>
-              ) : <button type="button" className={chosen.owned ? 'btn-main' : 'btn'} disabled={full} onClick={() => add(chosen.id)}>{addLabel}</button>}
-              {chosen.owned ? (
-                <>
-                  <button type="button" className="btn" onClick={() => edit(chosen.id)}><Pencil size={15} />Edit</button>
-                  <button type="button" className="btn" onClick={() => remove(chosen.id)}><Trash2 size={15} />Remove</button>
-                </>
-              ) : <button type="button" className="btn-main" onClick={() => own(chosen)}><Plus size={15} />Add to my paints</button>}
+              ) : <button type="button" className="btn-main" disabled={full} onClick={() => add(chosen.id)}>{addLabel}</button>}
+              {chosen.owned && <button type="button" className="btn" onClick={() => edit(chosen.id)}><Pencil size={15} />Edit</button>}
             </div>
           </div>
         )}
