@@ -13,6 +13,14 @@ export interface FilterState {
   sort: 'hue' | 'light' | 'code' | 'name'
 }
 
+/** Brand choices in the filter. Vallejo is split by range: the game family, Squidmar, and everything else. */
+export const brandChoice = (p: Pick<Paint, 'brand' | 'line'>): string => {
+  if (p.brand !== 'Vallejo') return p.brand
+  if (/squidmar/i.test(p.line)) return 'Vallejo Squidmar'
+  if (/^game |xpress/i.test(p.line)) return 'Vallejo GameColor'
+  return 'Vallejo Color'
+}
+
 export const EMPTY_FILTER: FilterState = { q: '', group: '', types: [], brands: [], sort: 'hue' }
 
 const hueKey = (p: Paint): number => {
@@ -28,7 +36,7 @@ export const applyFilter = <T extends Paint>(paints: T[], f: FilterState): T[] =
     (p) =>
       (!f.group || p.group === f.group) &&
       (f.types.length === 0 || f.types.includes(p.type)) &&
-      (f.brands.length === 0 || f.brands.includes(p.brand)) &&
+      (f.brands.length === 0 || f.brands.includes(brandChoice(p))) &&
       (!q || p.name.toLowerCase().includes(q) || p.line.toLowerCase().includes(q) || p.code.toLowerCase().includes(q) || (bare !== '' && p.code.toLowerCase().replace(/[^a-z0-9]/g, '').includes(bare))),
   )
   const sorters: Record<FilterState['sort'], (a: T, b: T) => number> = {
@@ -51,13 +59,16 @@ const unique = (values: string[]): string[] => [...new Set(values)].sort()
 /** Counts follow the other filters, so a number is what ticking that box would show. Ticked values stay listed even at zero. */
 const countBy = (paints: Paint[], every: string[], key: 'type' | 'brand'): MultiOption[] => {
   const counts = new Map(every.map((v) => [v, 0]))
-  for (const p of paints) counts.set(p[key], (counts.get(p[key]) ?? 0) + 1)
+  for (const p of paints) {
+    const value = key === 'brand' ? brandChoice(p) : p.type
+    counts.set(value, (counts.get(value) ?? 0) + 1)
+  }
   return every.map((v) => ({ value: v, count: counts.get(v) ?? 0 }))
 }
 
 export const Filters = ({ paints, value, onChange }: Props) => {
   const options = useMemo(
-    () => ({ group: unique(paints.map((p) => p.group)), type: unique(paints.map((p) => p.type)), brand: unique(paints.map((p) => p.brand)) }),
+    () => ({ group: unique(paints.map((p) => p.group)), type: unique(paints.map((p) => p.type)), brand: unique(paints.map(brandChoice)) }),
     [paints],
   )
   const typeOptions = useMemo(() => countBy(applyFilter(paints, { ...value, types: [] }), options.type, 'type'), [paints, value, options])

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import { applyFilter, EMPTY_FILTER } from '@/components/Filters'
+import { applyFilter, brandChoice, EMPTY_FILTER } from '@/components/Filters'
 import { checkPaint, finishOf, parseQuery } from '@/lib/buyCheck'
 import { hexToLab, isHex, labDistance } from '@/lib/color'
 import { toLibraryPaint } from '@/lib/library'
@@ -42,13 +42,25 @@ describe('library', () => {
     expect(red.length).toBeGreaterThan(3)
     expect(red.every((p) => p.brand === 'Citadel' && p.group === 'Red')).toBe(true)
   })
+  it('splits Vallejo into three brand choices that lose no paint', () => {
+    const everyone = [...buildPaints({}), ...library]
+    const vallejo = everyone.filter((p) => p.brand === 'Vallejo')
+    const count = (b: string) => applyFilter(everyone, { ...EMPTY_FILTER, brands: [b] }).length
+    const parts = ['Vallejo GameColor', 'Vallejo Color', 'Vallejo Squidmar'].map(count)
+    expect(parts.every((n) => n > 0)).toBe(true)
+    expect(parts[0] + parts[1] + parts[2]).toBe(vallejo.length)
+    expect(brandChoice({ brand: 'Vallejo', line: 'Model Color' })).toBe('Vallejo Color')
+    expect(brandChoice({ brand: 'Vallejo', line: 'Xpress Color' })).toBe('Vallejo GameColor')
+    expect(brandChoice({ brand: 'Vallejo', line: 'Squidmar Color' })).toBe('Vallejo Squidmar')
+    expect(brandChoice({ brand: 'Citadel', line: 'Base' })).toBe('Citadel')
+  })
   it('combines several brands and types', () => {
     const two = applyFilter(all, { ...EMPTY_FILTER, brands: ['Citadel', 'Scale75'] })
     expect(new Set(two.map((p) => p.brand))).toEqual(new Set(['Citadel', 'Scale75']))
     const only = (brand: string) => applyFilter(all, { ...EMPTY_FILTER, brands: [brand] }).length
     expect(two.length).toBe(only('Citadel') + only('Scale75'))
     const inventory = buildPaints({})
-    const types = applyFilter(inventory, { ...EMPTY_FILTER, types: ['Ink', 'Fluo'], brands: ['Vallejo'] })
+    const types = applyFilter(inventory, { ...EMPTY_FILTER, types: ['Ink', 'Fluo'], brands: ['Vallejo GameColor'] })
     expect(types.length).toBe(10)
     expect(types.every((p) => p.brand === 'Vallejo' && ['Ink', 'Fluo'].includes(p.type))).toBe(true)
   })
