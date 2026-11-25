@@ -5,7 +5,7 @@ import { COLOR_GROUPS, findTwin, isNormalType, PAINT_TYPES, problemWith, toField
 import { isHex } from '@/lib/color'
 import { guessGroup } from '@/lib/group'
 import type { Paint, PaintFields } from '@/lib/types'
-import { PaintPill } from './PaintPill'
+import { PaintLabel } from './PaintLabel'
 
 interface Props {
   /** The paint to edit, or null to add one. */
@@ -107,13 +107,12 @@ export const PaintDialog = ({ paint, paints, save, remove, close }: Props) => {
             <input id={`${id}q`} ref={first} className="field w-full" autoComplete="off" placeholder={catalog ? `Search ${catalog.length.toLocaleString('en')} paints` : 'Loading paint data'} value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault() }} />
             {failed && <p role="alert" className="mt-2 text-sm">The paint data did not load. You can still fill in the form.</p>}
             {query.trim() !== '' && catalog && (
-              <ul className="scroll mt-2 flex max-h-52 flex-wrap content-start gap-1.5 overflow-y-auto rounded-md bg-desk p-2.5">
+              <ul className="scroll mt-2 grid max-h-60 grid-cols-[minmax(0,1fr)] content-start gap-1.5 overflow-y-auto rounded-md bg-desk p-2.5">
                 {hits.map((h) => {
                   const twin = findTwin(h.fields, paints, null)
                   return (
-                    <li key={h.source.id + h.fields.line + h.fields.name} className="max-w-full">
-                      <PaintPill hex={h.fields.hex} name={h.fields.name} code={h.fields.code} owned={twin !== null} title={`${h.fields.brand}, ${h.fields.line}`} onClick={() => (twin ? setError(`You already have ${[twin.brand, twin.name, twin.code].filter(Boolean).join(' ')}.`) : take(h))} />
-                      <span className="ml-1.5 text-xs text-dim">{h.fields.brand}, {h.fields.line}</span>
+                    <li key={h.source.id + h.fields.line + h.fields.name}>
+                      <PaintLabel hex={h.fields.hex} name={h.fields.name} code={h.fields.code} brand={h.fields.brand} line={h.fields.line} owned={twin !== null} onClick={() => (twin ? setError(`You already have ${[twin.brand, twin.name, twin.code].filter(Boolean).join(' ')}.`) : take(h))} />
                     </li>
                   )
                 })}
@@ -148,7 +147,7 @@ export const PaintDialog = ({ paint, paints, save, remove, close }: Props) => {
         <datalist id={`${id}b`}>{brands.map((b) => <option key={b} value={b} />)}</datalist>
         <datalist id={`${id}l`}>{lines.map((l) => <option key={l} value={l} />)}</datalist>
 
-        {(fields.name || shownHex) && <div><PaintPill hex={shownHex} name={fields.name || 'No name yet'} code={fields.code} owned /></div>}
+        {(fields.name || shownHex) && <PaintLabel hex={shownHex} name={fields.name || 'No name yet'} code={fields.code} brand={fields.brand || 'Brand'} line={fields.line} owned />}
         {error && <p role="alert" className="rounded-md border border-line bg-raised px-3 py-2 text-sm">{error}</p>}
         <div className="flex gap-2">
           <button type="submit" className="btn-main">{paint ? 'Save changes' : 'Add to my paints'}</button>

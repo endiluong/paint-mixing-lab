@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Download, Pencil, Plus, RotateCcw, Trash2 } from 'lucide-react'
 import { applyFilter, EMPTY_FILTER, Filters, type FilterState } from '@/components/Filters'
-import { PaintPill } from '@/components/PaintPill'
+import { RangeTag } from '@/components/PaintLabel'
 import { isHex, paintBackground } from '@/lib/color'
 import type { Paint, PaintOverride } from '@/lib/types'
 
@@ -24,7 +24,7 @@ const HexInput = ({ paint, onChange }: { paint: Paint; onChange: (hex: string | 
   const [draft, setDraft] = useState<string | null>(null)
   return (
     <input
-      className="field w-24 tnum"
+      className="field w-21 tnum"
       aria-label={`Hex of ${paint.name} ${paint.code}`}
       value={draft ?? paint.hex ?? ''}
       placeholder="no hex"
@@ -96,7 +96,7 @@ export const InventoryTab = ({ paints, missing, change, reset, create, edit, rem
         <table className="w-full border-collapse text-sm">
           <thead className="sticky top-0 z-10 bg-panel text-left text-dim">
             <tr>
-              {['Paint', 'Hex', 'Hex source', 'Brand', 'Line', 'Type', 'Color group', 'In mixer', 'Checked', ''].map((h, i) => <th key={i} scope="col" className="whitespace-nowrap px-2 py-2 font-medium">{h}</th>)}
+              {['', 'Code', 'Name', 'Hex', 'Hex source', 'Range', 'Line', 'Type', 'Color group', 'In mixer', 'Checked', ''].map((h, i) => <th key={i} scope="col" className="whitespace-nowrap px-2 py-2 font-medium">{h}</th>)}
             </tr>
           </thead>
           <tbody>
@@ -124,13 +124,15 @@ interface RowProps {
 const Row = ({ paint: p, open, toggle, change, reset, edit, remove }: RowProps) => (
   <>
     <tr className="border-b border-line/60">
-      <td className="whitespace-nowrap px-2 py-1.5"><PaintPill hex={p.hex} metal={p.metal} name={p.name} code={p.code} owned /></td>
+      <td className="px-2 py-1.5"><span className="block h-9 w-10 rounded" style={{ background: paintBackground(p.hex, p.metal) }} /></td>
+      <td className="font-code whitespace-nowrap px-2 text-base font-bold">{p.code}</td>
+      <td className="whitespace-nowrap px-2">{p.name}</td>
       <td className="px-2"><HexInput paint={p} onChange={(hex) => change({ hex })} /></td>
       <td className="whitespace-nowrap px-2 text-dim">
         {p.hexSource}
         {p.gap >= GAP_WARNING && p.hexSource !== 'Yours' && <span className="ml-2 rounded bg-label px-1.5 py-0.5 text-xs text-label-ink">sources disagree</span>}
       </td>
-      <td className="whitespace-nowrap px-2">{p.brand}</td>
+      <td className="whitespace-nowrap px-2"><RangeTag brand={p.brand} line={p.line} /></td>
       <td className="whitespace-nowrap px-2">{p.line}</td>
       <td className="whitespace-nowrap px-2">{p.type}{p.detail && <span className="text-dim"> {p.detail}</span>}</td>
       <td className="whitespace-nowrap px-2">{p.group}</td>
@@ -146,7 +148,7 @@ const Row = ({ paint: p, open, toggle, change, reset, edit, remove }: RowProps) 
     </tr>
     {open && (
       <tr className="border-b border-line bg-panel">
-        <td colSpan={10} className="p-4">
+        <td colSpan={12} className="p-4">
           <div className="flex flex-wrap gap-6">
             {p.origin === 'starter' && <figure className="m-0">
               <img src={`./labels/${p.id}.jpg`} alt={`Label photo of ${p.name} ${p.code}`} className="block h-52 rounded" loading="lazy" />

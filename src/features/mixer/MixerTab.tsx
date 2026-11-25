@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { ChevronDown, ChevronUp, Pencil, Plus, Trash2 } from 'lucide-react'
 import { applyFilter, EMPTY_FILTER, Filters, type FilterState } from '@/components/Filters'
-import { OwnedMark, PaintPill, PILL_ACTION } from '@/components/PaintPill'
+import { OwnedMark, PaintLabel, RangeTag } from '@/components/PaintLabel'
 import { Segmented } from '@/components/Segmented'
 import { usePersisted } from '@/hooks/usePersisted'
 import { loadLibrary, notOwned } from '@/lib/library'
@@ -237,14 +237,14 @@ export const MixerTab = ({ paints: mine, collection, mixItems, setMixItems, prob
           </div>
           {scope === 'all' && libraryState === 'failed' && <p role="alert" className="mt-2 text-sm">The other paints did not load. Reload the page to try again.</p>}
         </div>
-        <ul className="scroll flex min-h-0 flex-1 flex-wrap content-start gap-2 overflow-y-auto p-3">
+        <ul className="scroll grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-1.5 overflow-y-auto p-3">
           {listed.map((p) => (
-            <li key={p.id} id={`paint-${p.id}`} className="max-w-full">
-              <PaintPill hex={p.hex} metal={p.metal} code={p.code} name={p.name} owned={p.owned} title={`${p.brand}, ${p.line}, ${p.hex}`} selected={p.id === selected} onClick={() => setSelected(p.id === selected ? null : p.id)}>
-                <button type="button" className={PILL_ACTION} aria-label={`${addLabel}: ${p.name} ${p.code}`} title={addLabel} disabled={full} onClick={() => add(p.id)}>
-                  <Plus size={16} />
+            <li key={p.id} id={`paint-${p.id}`}>
+              <PaintLabel hex={p.hex} metal={p.metal} code={p.code} name={p.name} brand={p.brand} line={p.line} owned={p.owned} selected={p.id === selected} onClick={() => setSelected(p.id === selected ? null : p.id)}>
+                <button type="button" className="shrink-0 px-3 hover:bg-black/10 focus-visible:-outline-offset-2 focus-visible:outline-black" aria-label={`${addLabel}: ${p.name} ${p.code}`} title={addLabel} disabled={full} onClick={() => add(p.id)}>
+                  <Plus size={18} />
                 </button>
-              </PaintPill>
+              </PaintLabel>
             </li>
           ))}
           {shown.length > listed.length && <li className="w-full"><button type="button" className="btn w-full" onClick={() => setLimit(limit + PAGE * 2)}>Show more, {(shown.length - listed.length).toLocaleString('en')} left</button></li>}
@@ -256,7 +256,7 @@ export const MixerTab = ({ paints: mine, collection, mixItems, setMixItems, prob
               <span className="h-10 w-10 shrink-0 rounded-[8px] ring-1 ring-inset ring-white/20" style={{ background: chosen.hex }} />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold">{chosen.name} <span className="font-code">{chosen.code}</span></p>
-                <p className="truncate text-sm text-dim">{chosen.owned ? 'In your paints' : 'Not in your paints'}. {chosen.brand}, {chosen.line}, <span className="tnum">{chosen.hex}</span></p>
+                <p className="mt-0.5 flex min-w-0 items-center gap-2 text-sm text-dim"><RangeTag brand={chosen.brand} line={chosen.line} /><span className="truncate"><span className="tnum">{chosen.hex}</span>, {chosen.owned ? 'in your paints' : 'not in your paints'}</span></p>
               </div>
             </div>
             <div className="mt-2 flex flex-wrap gap-2">
