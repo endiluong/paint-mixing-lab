@@ -1,0 +1,8 @@
+node_modules
+dist
+*.local
+.DS_Store
+
+# Paint Pad's terms allow viewing only, so its hex values stay on this computer.
+# Without this file the app falls back to the open dataset.
+src/data/paintpad-hex.json
