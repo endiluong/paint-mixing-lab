@@ -169,12 +169,12 @@ const Result = ({ raw, q, hits, hit, choice, candidate, verdict, twin, wished, c
   return (
     <article className="overflow-hidden rounded-lg bg-panel">
       <div className="flex flex-col sm:flex-row">
-        <div className="flex h-28 shrink-0 sm:h-auto sm:min-h-40 sm:w-64">
+        <div className="flex h-28 shrink-0 sm:h-auto sm:min-h-40 sm:w-72">
           {candidate && verdict ? (
             <>
-              {verdict.owned ? <Swatch hex={verdict.owned.hex ?? candidate.hex} metal={verdict.owned.metal} label="Yours" /> : <Swatch hex={candidate.hex} metal={candidate.metal} label="To buy" />}
-              {!verdict.owned && verdict.kind === 'mix' && mix && <Swatch hex={mix.hex} label="Your mix" />}
-              {!verdict.owned && verdict.kind !== 'mix' && nearest && <Swatch hex={nearest.hex} metal={nearest.paint.metal} label={verdict.kind === 'gap' ? 'Nearest' : 'Yours'} />}
+              {verdict.owned ? <Swatch hex={verdict.owned.hex ?? candidate.hex} metal={verdict.owned.metal} label="Yours" name={verdict.owned.name} code={verdict.owned.code} /> : <Swatch hex={candidate.hex} metal={candidate.metal} label="To buy" name={candidate.name || candidate.title} code={candidate.code} />}
+              {!verdict.owned && verdict.kind === 'mix' && mix && <Swatch hex={mix.hex} label="Your mix" name={mix.items.map((i) => `${i.parts} ${i.paint.name}`).join(' + ')} />}
+              {!verdict.owned && verdict.kind !== 'mix' && nearest && <Swatch hex={nearest.hex} metal={nearest.paint.metal} label={verdict.kind === 'gap' ? 'Nearest' : 'Yours'} name={nearest.paint.name} code={nearest.paint.code} />}
             </>
           ) : <span className="flex-1" style={{ background: 'repeating-linear-gradient(45deg,#444 0 8px,#4e4e4e 8px 16px)' }} />}
         </div>
@@ -221,9 +221,22 @@ const Result = ({ raw, q, hits, hit, choice, candidate, verdict, twin, wished, c
   )
 }
 
-const Swatch = ({ hex, metal, label }: { hex: string; metal?: MetalSwatch | null; label: string }) => (
-  <span className="flex flex-1 flex-col justify-end p-2.5 text-xs" style={{ background: paintBackground(hex, metal), color: inkOn(metal ? (metal.stops[0] ?? hex) : hex) }}>
-    <span className="font-semibold">{label}</span>
-    <span className="tnum">{hex}</span>
+interface SwatchProps {
+  hex: string
+  metal?: MetalSwatch | null
+  label: string
+  /** Official name of the paint. */
+  name: string
+  code?: string
+}
+
+const Swatch = ({ hex, metal, label, name, code }: SwatchProps) => (
+  <span className="flex min-w-0 flex-1 flex-col justify-end" style={{ background: paintBackground(hex, metal) }}>
+    {/* Solid strip, so the text is readable over a metallic sweep */}
+    <span className="flex flex-col gap-0.5 p-2.5 text-xs" style={{ background: hex, color: inkOn(hex) }}>
+      <span>{label}</span>
+      <span className="text-sm leading-tight font-semibold break-words">{name}{code && <> <span className="font-code whitespace-nowrap font-bold">{code}</span></>}</span>
+      <span className="tnum">{hex}</span>
+    </span>
   </span>
 )
