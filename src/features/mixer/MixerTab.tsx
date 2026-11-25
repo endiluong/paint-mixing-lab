@@ -19,21 +19,23 @@ interface Props {
   paints: UsablePaint[]
   mixItems: MixItem[]
   setMixItems: (next: MixItem[] | ((prev: MixItem[]) => MixItem[])) => void
+  /** Colour sent from another tab to look at on the graph. */
+  probe: string | null
 }
 
 type Surround = 'dark' | 'grey' | 'white'
 const SURROUND: Record<Surround, string> = { dark: '#262626', grey: '#777777', white: '#f2f2f2' }
 
-export const MixerTab = ({ paints, mixItems, setMixItems }: Props) => {
+export const MixerTab = ({ paints, mixItems, setMixItems, probe }: Props) => {
   const [view, setView] = useLocalStorage<'3d' | '2d'>('pml.view', '3d')
   const [surround, setSurround] = useLocalStorage<Surround>('pml.surround', 'dark')
-  const [mode, setMode] = useState<BenchMode>('mix')
+  const [mode, setMode] = useState<BenchMode>(probe ? 'match' : 'mix')
   const [open, setOpen] = useState(true)
   const [filter, setFilter] = useState<FilterState>(EMPTY_FILTER)
   const [selected, setSelected] = useState<string | null>(null)
   const [layer, setLayer] = useLocalStorage<LayerState>('pml.layer', { base: '', layers: [] })
   const [saved, setSaved] = useLocalStorage<SavedSwatch[]>('pml.saved', [])
-  const [target, setTarget] = useState('#6B7A3A')
+  const [target, setTarget] = useState(probe ?? '#6B7A3A')
 
   useEffect(() => {
     if (selected && window.matchMedia('(min-width: 1024px)').matches) document.getElementById(`paint-${selected}`)?.scrollIntoView({ block: 'nearest' })

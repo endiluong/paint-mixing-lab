@@ -1,6 +1,6 @@
 # Third-party notices
 
-## miniature-paints (hex values in src/data/paints.json)
+## miniature-paints (hex values in src/data/paints.json and public/reference.json)
 
 https://github.com/Arcturus5404/miniature-paints
 

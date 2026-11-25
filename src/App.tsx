@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Segmented } from '@/components/Segmented'
+import { BuyTab } from '@/features/buy/BuyTab'
 import { InventoryTab } from '@/features/inventory/InventoryTab'
 import { MixerTab } from '@/features/mixer/MixerTab'
 import type { MixItem } from '@/features/mixer/bench'
@@ -8,10 +9,11 @@ import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { buildPaints, isUsable } from '@/lib/paints'
 import type { PaintOverride } from '@/lib/types'
 
-type Tab = 'mixer' | 'recipes' | 'inventory'
+type Tab = 'mixer' | 'recipes' | 'buy' | 'inventory'
 
 export const App = () => {
   const [tab, setTab] = useState<Tab>('mixer')
+  const [probe, setProbe] = useState<string | null>(null)
   const [overrides, setOverrides] = useLocalStorage<Record<string, PaintOverride>>('pml.overrides', {})
   const [mixItems, setMixItems] = useLocalStorage<MixItem[]>('pml.mix', [])
   const paints = useMemo(() => buildPaints(overrides), [overrides])
@@ -24,10 +26,16 @@ export const App = () => {
   const sendToMixer = useCallback(
     (items: MixItem[]) => {
       setMixItems(items.slice(0, 4))
+      setProbe(null)
       setTab('mixer')
     },
     [setMixItems],
   )
+
+  const showOnGraph = useCallback((hex: string) => {
+    setProbe(hex)
+    setTab('mixer')
+  }, [])
 
   return (
     <div className="flex min-h-full flex-col lg:h-full">
@@ -37,12 +45,13 @@ export const App = () => {
           label="Section"
           value={tab}
           onChange={setTab}
-          options={[{ value: 'mixer', label: 'Mixer' }, { value: 'recipes', label: 'Recipes' }, { value: 'inventory', label: 'Inventory' }]}
+          options={[{ value: 'mixer', label: 'Mixer' }, { value: 'recipes', label: 'Recipes' }, { value: 'buy', label: 'Buy check' }, { value: 'inventory', label: 'Inventory' }]}
         />
       </header>
       <main className="min-h-0 flex-1">
-        {tab === 'mixer' && <MixerTab paints={usable} mixItems={mixItems} setMixItems={setMixItems} />}
+        {tab === 'mixer' && <MixerTab paints={usable} mixItems={mixItems} setMixItems={setMixItems} probe={probe} />}
         {tab === 'recipes' && <RecipesTab paints={paints} usable={usable} sendToMixer={sendToMixer} />}
+        {tab === 'buy' && <BuyTab paints={paints} sendToMixer={sendToMixer} showOnGraph={showOnGraph} />}
         {tab === 'inventory' && <InventoryTab paints={paints} change={change} reset={(code) => setOverrides((prev) => Object.fromEntries(Object.entries(prev).filter(([k]) => k !== code)))} />}
       </main>
     </div>

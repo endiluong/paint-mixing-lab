@@ -21,6 +21,7 @@ npm run build    # production build in dist/
   - *Match a color*: the closest paints you own and the best 2 or 3 paint mixes for a target.
   - *Swatches*: saved tests.
 - **Recipes**: load a recipe page you saved from Paint Pad, or write your own. Shows which paints you own and what to use instead.
+- **Buy check**: paste a shopping list (code, brand, name or hex). Tells you if you own it, if it duplicates a color you have, if you can mix it, or if it fills a gap.
 - **Inventory**: every paint with its hex, hex sources, label photo and details. Change a hex, the tint strength or the hiding power, tick paints as checked, export CSV.
 
 Only normal acrylics are in the graph. Xpress, metal, ink, fluo, Quick Gen, Special FX and "Intense" paints can be added one by one with "In mixer" in the Inventory.
@@ -39,6 +40,7 @@ A hex does not contain a paint's pigments, so results are estimates. Test on rea
 |---|---|
 | `src/data/paints.json` | Inventory, with hex from [miniature-paints](https://github.com/Arcturus5404/miniature-paints) (MIT, (c) 2022 Rick Fleuren, see THIRD_PARTY_NOTICES.md) and Hobby-Paints-Wiki |
 | `src/data/paintpad-hex.json` | Preferred hex values from [Paint Pad](https://paintpad.app/paints). Not committed: their terms allow viewing only |
+| `public/reference.json` | 9,909 paints from miniature-paints for Buy check. Rebuild with `node scripts/build-reference.mjs` |
 | `public/labels/` | Label photos for cross-checking |
 
 Recipes, changes and swatches are kept in the browser only. Recipes belong to their authors.
