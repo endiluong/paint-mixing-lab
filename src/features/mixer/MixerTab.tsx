@@ -169,7 +169,7 @@ export const MixerTab = ({ paints: mine, collection, mixItems, setMixItems, prob
             value={scope}
             onChange={(s) => {
               setScope(s)
-              setFilter((f) => ({ ...EMPTY_FILTER, sort: f.sort, group: f.group }))
+              setFilter((f) => ({ ...EMPTY_FILTER, sort: f.sort, groups: f.groups }))
               setSelected(null)
               setLimit(PAGE)
             }}

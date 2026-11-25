@@ -10,12 +10,14 @@ interface Props {
   /** Plural noun, such as "brands". */
   noun: string
   options: MultiOption[]
+  /** Side of the button the list lines up with, so it stays on screen. */
+  align?: 'left' | 'right'
   value: string[]
   onChange: (next: string[]) => void
 }
 
 /** Dropdown with checkboxes. Nothing ticked means everything. */
-export const MultiSelect = ({ noun, options, value, onChange }: Props) => {
+export const MultiSelect = ({ noun, options, align = 'right', value, onChange }: Props) => {
   const [open, setOpen] = useState(false)
   const box = useRef<HTMLDivElement>(null)
   const button = useRef<HTMLButtonElement>(null)
@@ -52,7 +54,7 @@ export const MultiSelect = ({ noun, options, value, onChange }: Props) => {
         <ChevronDown size={15} className="shrink-0 text-dim" />
       </button>
       {open && (
-        <div id={id} role="group" aria-label={noun} className="scroll absolute right-0 z-30 mt-1 max-h-72 w-max min-w-full max-w-[min(300px,88vw)] overflow-y-auto rounded-md border border-line bg-raised p-1 shadow-xl">
+        <div id={id} role="group" aria-label={noun} className={`scroll absolute ${align === 'left' ? 'left-0' : 'right-0'} z-30 mt-1 max-h-72 w-max min-w-full max-w-[min(300px,88vw)] overflow-y-auto rounded-md border border-line bg-raised p-1 shadow-xl`}>
           {options.map((o) => (
             <label key={o.value} className="flex cursor-pointer items-center gap-2.5 rounded px-2 py-1.5 text-sm hover:bg-[#424242]">
               <input type="checkbox" checked={value.includes(o.value)} onChange={() => toggle(o.value)} />

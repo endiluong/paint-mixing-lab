@@ -36,7 +36,7 @@ describe('library', () => {
   })
   it('filters and sorts all paints quickly', () => {
     const start = performance.now()
-    const red = applyFilter(all, { ...EMPTY_FILTER, group: 'Red', brands: ['Citadel'] })
+    const red = applyFilter(all, { ...EMPTY_FILTER, groups: ['Red'], brands: ['Citadel'] })
     applyFilter(all, EMPTY_FILTER)
     expect(performance.now() - start).toBeLessThan(400)
     expect(red.length).toBeGreaterThan(3)
@@ -53,6 +53,14 @@ describe('library', () => {
     expect(brandChoice({ brand: 'Vallejo', line: 'Xpress Color' })).toBe('Vallejo GameColor')
     expect(brandChoice({ brand: 'Vallejo', line: 'Squidmar Color' })).toBe('Vallejo Squidmar')
     expect(brandChoice({ brand: 'Citadel', line: 'Base' })).toBe('Citadel')
+  })
+  it('combines several color groups', () => {
+    const inventory = buildPaints({})
+    const only = (group: string) => applyFilter(inventory, { ...EMPTY_FILTER, groups: [group] }).length
+    const two = applyFilter(inventory, { ...EMPTY_FILTER, groups: ['Red', 'Blue'] })
+    expect(new Set(two.map((p) => p.group))).toEqual(new Set(['Red', 'Blue']))
+    expect(two.length).toBe(only('Red') + only('Blue'))
+    expect(applyFilter(inventory, EMPTY_FILTER).length).toBe(inventory.length)
   })
   it('combines several brands and types', () => {
     const two = applyFilter(all, { ...EMPTY_FILTER, brands: ['Citadel', 'Scale75'] })
