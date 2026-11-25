@@ -1,10 +1,12 @@
-import type { UsablePaint } from './types'
+import { buildPaint, isUsable, STARTER } from './paints'
+import type { Paint, UsablePaint } from './types'
 
 type Row = [id: string, brand: string, set: string, code: string, name: string, hex: string, group: string, source: string]
 
 export const toLibraryPaint = ([id, brand, set, code, name, hex, group, source]: Row): UsablePaint => ({
   id,
   owned: false,
+  origin: 'catalog',
   code,
   name,
   brand,
@@ -45,4 +47,12 @@ export const loadLibrary = (): Promise<UsablePaint[]> => {
       throw error
     })
   return pending
+}
+
+/** Normal paints that are not in the collection, including built-in ones the user removed. */
+export const notOwned = (library: UsablePaint[], collection: Paint[]): UsablePaint[] => {
+  const ids = new Set(collection.map((p) => p.id))
+  const codes = new Set(collection.filter((p) => p.code).map((p) => `${p.brand}|${p.code}`))
+  const removed = STARTER.map((r) => buildPaint(r, false)).filter(isUsable)
+  return [...library, ...removed].filter((p) => !ids.has(p.id) && !(p.code && codes.has(`${p.brand}|${p.code}`)))
 }

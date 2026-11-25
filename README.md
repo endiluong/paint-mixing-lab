@@ -1,27 +1,27 @@
 # Paint Mixing Lab
 
 
-Color mixing for the paints you own. Built from a 193-paint inventory read from bottle labels.
+Color mixing for the paints you own. Starts from a 193-paint inventory read from bottle labels; add, edit and remove paints to make it your own collection.
 
 ## Run
 
 ```bash
 npm install
 npm run dev      # development
-npm test         # color model, recipe import and inventory tests
+npm test         # color model, recipe import, collection and database tests
 npm run build    # production build in dist/
 ```
 
 ## Tabs
 
-- **Mixer**: 60/40 screen. Left is the color graph (3D sphere or 2D wheel) with the bench below it. Right is the list of paints in the graph, filtered by color group, type and brand. A toggle switches between the paints you own and every normal paint in the library (Vallejo with Squidmar Color, AK, Citadel, Scale75).
+- **Mixer**: 60/40 screen. Left is the color graph (3D sphere or 2D wheel) with the bench below it. Right is the list of paints in the graph, filtered by color group, type and brand. A toggle switches between the paints you own and every normal paint in the library (Vallejo with Squidmar Color, AK, Citadel, Scale75). Each paint is a pill in its own color; a check mark means it is in your paints. Select a pill to edit, remove or add it.
   - *Mix*: 2, 3 or 4 paints in parts, with test swatches for common ratios.
   - *Layer*: a base coat and up to six coats, each with its own opacity.
   - *Match a color*: the closest paints you own and the best 2 or 3 paint mixes for a target.
   - *Swatches*: saved tests.
 - **Recipes**: load a recipe page you saved from Paint Pad, or write your own. Shows which paints you own and what to use instead.
 - **Buy check**: paste a shopping list (code, brand, name or hex). Tells you if you own it, if it duplicates a color you have, if you can mix it, or if it fills a gap.
-- **Inventory**: every paint with its hex, hex sources, label photo and details. Change a hex, the tint strength or the hiding power, tick paints as checked, export CSV.
+- **Inventory**: your collection, with hex, hex sources, label photo and details. Add a paint by searching 9,000+ known ones or typing it, edit, remove (with undo), bring back built-in paints, change tint strength and hiding power, export CSV.
 
 Only normal acrylics are in the graph. Xpress, metal, ink, fluo, Quick Gen, Special FX and "Intense" paints can be added one by one with "In mixer" in the Inventory.
 
@@ -46,4 +46,15 @@ A hex does not contain a paint's pigments, so results are estimates. Test on rea
 | `public/reference.json` | 9,909 paints from miniature-paints for Buy check. Rebuild with `node scripts/build-reference.mjs` |
 | `public/labels/` | Label photos for cross-checking |
 
-Recipes, changes and swatches are kept in the browser only. Recipes belong to their authors.
+Recipes belong to their authors.
+
+## Where your data is kept
+
+In IndexedDB (`paint-mixing-lab`) of each user's own browser; nothing is sent to a server. Clearing the site's data deletes it.
+
+| Store | Content |
+|---|---|
+| `paints` | The collection, one record per paint. Filled from `src/data/paints.json` on the first visit only, so removed paints stay removed |
+| `state` | Recipes, swatches, wishlist, current mix and layers, view settings |
+
+Data kept in localStorage by older versions is copied over on the first visit.

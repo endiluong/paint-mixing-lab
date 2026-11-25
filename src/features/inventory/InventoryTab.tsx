@@ -1,13 +1,20 @@
 import { useMemo, useState } from 'react'
-import { Download } from 'lucide-react'
+import { Download, Pencil, Plus, RotateCcw, Trash2 } from 'lucide-react'
 import { applyFilter, EMPTY_FILTER, Filters, type FilterState } from '@/components/Filters'
+import { PaintPill } from '@/components/PaintPill'
 import { isHex, paintBackground } from '@/lib/color'
 import type { Paint, PaintOverride } from '@/lib/types'
 
 interface Props {
   paints: Paint[]
-  change: (code: string, patch: PaintOverride) => void
-  reset: (code: string) => void
+  /** How many built-in paints are not in the collection. */
+  missing: number
+  change: (id: string, patch: PaintOverride) => void
+  reset: (id: string) => void
+  create: () => void
+  edit: (id: string) => void
+  remove: (ids: string[]) => void
+  restoreBuiltIn: () => void
 }
 
 /** OKLab distance above which two references for one paint are worth a look. */
@@ -38,7 +45,7 @@ const csv = (paints: Paint[]): string => {
   return [head, ...paints.map((p) => [p.code, p.name, p.brand, p.line, p.type, p.detail, p.group, p.hex, p.hexSource, p.inMixer, p.strength, p.hiding, p.checked, p.seen])].map((r) => r.map(cell).join(',')).join('\r\n')
 }
 
-export const InventoryTab = ({ paints, change, reset }: Props) => {
+export const InventoryTab = ({ paints, missing, change, reset, create, edit, remove, restoreBuiltIn }: Props) => {
   const [filter, setFilter] = useState<FilterState>({ ...EMPTY_FILTER, sort: 'code' })
   const [only, setOnly] = useState<'all' | 'unchecked' | 'gap' | 'nohex' | 'off'>('all')
   const [open, setOpen] = useState<string | null>(null)
@@ -54,6 +61,9 @@ export const InventoryTab = ({ paints, change, reset }: Props) => {
     [paints, filter, only],
   )
   const checked = paints.filter((p) => p.checked).length
+  const removeAll = (): void => {
+    if (window.confirm(`Remove all ${paints.length} paints from this browser? Paints you typed yourself cannot be brought back later.`)) remove(paints.map((p) => p.id))
+  }
   const download = (): void => {
     const url = URL.createObjectURL(new Blob(['﻿', csv(shown)], { type: 'text/csv' }))
     const a = document.createElement('a')
@@ -75,7 +85,10 @@ export const InventoryTab = ({ paints, change, reset }: Props) => {
             <option value="nohex">No hex</option>
             <option value="off">Not in the mixer</option>
           </select>
+          <button type="button" className="btn-main" onClick={create}><Plus size={15} />Add a paint</button>
           <button type="button" className="btn" onClick={download}><Download size={15} />Export CSV</button>
+          {missing > 0 && <button type="button" className="btn" onClick={restoreBuiltIn}><RotateCcw size={15} />Bring back {missing} built-in</button>}
+          {paints.length > 0 && <button type="button" className="btn" onClick={removeAll}><Trash2 size={15} />Remove all</button>}
           <p className="py-1.5 text-sm text-dim tnum">{shown.length} of {paints.length} shown, {checked} checked</p>
         </div>
       </div>
@@ -83,16 +96,16 @@ export const InventoryTab = ({ paints, change, reset }: Props) => {
         <table className="w-full border-collapse text-sm">
           <thead className="sticky top-0 z-10 bg-panel text-left text-dim">
             <tr>
-              {['', 'Code', 'Name', 'Hex', 'Hex source', 'Brand', 'Line', 'Type', 'Color group', 'In mixer', 'Checked', ''].map((h, i) => <th key={i} scope="col" className="whitespace-nowrap px-3 py-2 font-medium">{h}</th>)}
+              {['Paint', 'Hex', 'Hex source', 'Brand', 'Line', 'Type', 'Color group', 'In mixer', 'Checked', ''].map((h, i) => <th key={i} scope="col" className="whitespace-nowrap px-2 py-2 font-medium">{h}</th>)}
             </tr>
           </thead>
           <tbody>
             {shown.map((p) => (
-              <Row key={p.code} paint={p} open={open === p.code} toggle={() => setOpen(open === p.code ? null : p.code)} change={(patch) => change(p.code, patch)} reset={() => reset(p.code)} />
+              <Row key={p.id} paint={p} open={open === p.id} toggle={() => setOpen(open === p.id ? null : p.id)} change={(patch) => change(p.id, patch)} reset={() => reset(p.id)} edit={() => edit(p.id)} remove={() => remove([p.id])} />
             ))}
           </tbody>
         </table>
-        {shown.length === 0 && <p className="p-6 text-dim">No paint matches. Clear the filters to see all {paints.length}.</p>}
+        {shown.length === 0 && <p className="p-6 text-dim">{paints.length === 0 ? 'No paints yet. Add your first one, or bring back the built-in paints.' : `No paint matches. Clear the filters to see all ${paints.length}.`}</p>}
       </div>
     </div>
   )
@@ -104,35 +117,41 @@ interface RowProps {
   toggle: () => void
   change: (patch: PaintOverride) => void
   reset: () => void
+  edit: () => void
+  remove: () => void
 }
 
-const Row = ({ paint: p, open, toggle, change, reset }: RowProps) => (
+const Row = ({ paint: p, open, toggle, change, reset, edit, remove }: RowProps) => (
   <>
     <tr className="border-b border-line/60">
-      <td className="px-3 py-1.5"><span className="block h-9 w-14 rounded" style={{ background: paintBackground(p.hex, p.metal) }} /></td>
-      <td className="font-code whitespace-nowrap px-3 text-base font-bold">{p.code}</td>
-      <td className="whitespace-nowrap px-3">{p.name}</td>
-      <td className="px-3"><HexInput paint={p} onChange={(hex) => change({ hex })} /></td>
-      <td className="whitespace-nowrap px-3 text-dim">
+      <td className="whitespace-nowrap px-2 py-1.5"><PaintPill hex={p.hex} metal={p.metal} name={p.name} code={p.code} owned /></td>
+      <td className="px-2"><HexInput paint={p} onChange={(hex) => change({ hex })} /></td>
+      <td className="whitespace-nowrap px-2 text-dim">
         {p.hexSource}
         {p.gap >= GAP_WARNING && p.hexSource !== 'Yours' && <span className="ml-2 rounded bg-label px-1.5 py-0.5 text-xs text-label-ink">sources disagree</span>}
       </td>
-      <td className="whitespace-nowrap px-3">{p.brand}</td>
-      <td className="whitespace-nowrap px-3">{p.line}</td>
-      <td className="whitespace-nowrap px-3">{p.type}{p.detail && <span className="text-dim"> {p.detail}</span>}</td>
-      <td className="whitespace-nowrap px-3">{p.group}</td>
-      <td className="px-3 text-center"><input type="checkbox" aria-label={`Use ${p.name} in the mixer`} checked={p.inMixer} disabled={!p.hex} onChange={(e) => change({ inMixer: e.target.checked })} /></td>
-      <td className="px-3 text-center"><input type="checkbox" aria-label={`${p.name} checked`} checked={p.checked} onChange={(e) => change({ checked: e.target.checked })} /></td>
-      <td className="px-3"><button type="button" className="btn" aria-expanded={open} onClick={toggle}>{open ? 'Close' : 'Details'}</button></td>
+      <td className="whitespace-nowrap px-2">{p.brand}</td>
+      <td className="whitespace-nowrap px-2">{p.line}</td>
+      <td className="whitespace-nowrap px-2">{p.type}{p.detail && <span className="text-dim"> {p.detail}</span>}</td>
+      <td className="whitespace-nowrap px-2">{p.group}</td>
+      <td className="px-2 text-center"><input type="checkbox" aria-label={`Use ${p.name} in the mixer`} checked={p.inMixer} disabled={!p.hex} onChange={(e) => change({ inMixer: e.target.checked })} /></td>
+      <td className="px-2 text-center"><input type="checkbox" aria-label={`${p.name} checked`} checked={p.checked} onChange={(e) => change({ checked: e.target.checked })} /></td>
+      <td className="px-2">
+        <div className="flex gap-1.5">
+          <button type="button" className="btn" aria-expanded={open} onClick={toggle}>{open ? 'Close' : 'Details'}</button>
+          <button type="button" className="btn px-2" aria-label={`Edit ${p.name} ${p.code}`} title="Edit" onClick={edit}><Pencil size={15} /></button>
+          <button type="button" className="btn px-2" aria-label={`Remove ${p.name} ${p.code}`} title="Remove" onClick={remove}><Trash2 size={15} /></button>
+        </div>
+      </td>
     </tr>
     {open && (
       <tr className="border-b border-line bg-panel">
-        <td colSpan={12} className="p-4">
+        <td colSpan={10} className="p-4">
           <div className="flex flex-wrap gap-6">
-            <figure className="m-0">
-              <img src={`./labels/${p.code}.jpg`} alt={`Label photo of ${p.name} ${p.code}`} className="block h-52 rounded" loading="lazy" />
+            {p.origin === 'starter' && <figure className="m-0">
+              <img src={`./labels/${p.id}.jpg`} alt={`Label photo of ${p.name} ${p.code}`} className="block h-52 rounded" loading="lazy" />
               <figcaption className="mt-1 text-xs text-dim">Your photo, {p.seen}</figcaption>
-            </figure>
+            </figure>}
             {p.metal && (
               <figure className="m-0">
                 <div className="h-32 w-44 rounded" style={{ background: paintBackground(p.hex, p.metal) }} />
@@ -167,7 +186,7 @@ const Row = ({ paint: p, open, toggle, change, reset }: RowProps) => (
             </div>
             <dl className="grid h-fit grid-cols-[auto_1fr] gap-x-4 gap-y-1">
               <dt className="text-dim">Name from</dt><dd>{p.nameSource}</dd>
-              <dt className="text-dim">Label score</dt><dd className="tnum">{p.score} / 10{p.confirmed ? ', confirmed by you' : ''}</dd>
+              {p.origin === 'starter' && <><dt className="text-dim">Label score</dt><dd className="tnum">{p.score} / 10{p.confirmed ? ', confirmed by you' : ''}</dd></>}
             </dl>
           </div>
         </td>

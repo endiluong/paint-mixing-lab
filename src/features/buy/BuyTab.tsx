@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Crosshair, FlaskConical, Heart, X } from 'lucide-react'
 import type { MixItem } from '@/features/mixer/bench'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { usePersisted } from '@/hooks/usePersisted'
 import { checkPaint, DUPLICATE, FINISH_LABEL, finishOf, loadReference, lookup, parseQuery, type Candidate, type Finish, type Lookup, type Query, type RefPaint, type Verdict, type VerdictKind } from '@/lib/buyCheck'
 import { closeness, hexToLab, inkOn, isHex, labDistance, paintBackground } from '@/lib/color'
 import type { MetalSwatch, Paint } from '@/lib/types'
@@ -48,10 +48,10 @@ const toCandidate = (q: Query, hit: Lookup | undefined, choice: Choice): Candida
 export const BuyTab = ({ paints, sendToMixer, showOnGraph }: Props) => {
   const [refs, setRefs] = useState<RefPaint[] | null>(null)
   const [failed, setFailed] = useState(false)
-  const [text, setText] = useLocalStorage('pml.buy', '')
-  const [lines, setLines] = useLocalStorage<string[]>('pml.buy.lines', [])
-  const [choices, setChoices] = useLocalStorage<Record<string, Choice>>('pml.buy.choices', {})
-  const [wish, setWish] = useLocalStorage<Candidate[]>('pml.wish', [])
+  const [text, setText] = usePersisted('pml.buy', '')
+  const [lines, setLines] = usePersisted<string[]>('pml.buy.lines', [])
+  const [choices, setChoices] = usePersisted<Record<string, Choice>>('pml.buy.choices', {})
+  const [wish, setWish] = usePersisted<Candidate[]>('pml.wish', [])
 
   useEffect(() => {
     let live = true

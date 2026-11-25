@@ -183,8 +183,8 @@ export const findOwnedCandidate = (c: Pick<Candidate, 'brand' | 'code' | 'name'>
     const hit = paints.find((p) => codeKey(p.code) === code && (!c.brand || p.brand === c.brand))
     if (hit) return hit
   }
-  if (code || c.brand !== 'Scale75') return null
-  return paints.find((p) => p.brand === 'Scale75' && plain(p.name) === plain(c.name)) ?? null
+  // Without a code on one side, brand and full name decide
+  return paints.find((p) => c.brand !== '' && p.brand === c.brand && plain(p.name) === plain(c.name) && (!codeKey(p.code) || (!code && c.brand === 'Scale75'))) ?? null
 }
 
 export const checkPaint = (c: Candidate, paints: Paint[]): Verdict => {

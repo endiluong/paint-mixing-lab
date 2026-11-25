@@ -42,8 +42,11 @@ export const hue = (c: Lab): number => ((Math.atan2(c.b, c.a) * 180) / Math.PI +
 export const paintBackground = (hex: string | null, metal: { angle: number; stops: string[] } | null | undefined): string =>
   metal ? `linear-gradient(${metal.angle}deg, ${metal.stops.join(', ')})` : (hex ?? 'repeating-linear-gradient(45deg,#555 0 5px,#666 5px 10px)')
 
-/** Black or white text, whichever reads better on the colour. */
-export const inkOn = (hex: string): string => (hexToLab(hex).L > 0.62 ? '#111111' : '#ffffff')
+/** Black or white text, whichever has more contrast on the colour. Always at least 4.5 to 1. */
+export const inkOn = (hex: string): string => {
+  const [r, g, b] = [1, 3, 5].map((i) => toLinear(parseInt(hex.slice(i, i + 2), 16) / 255))
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.179 ? '#000000' : '#ffffff'
+}
 
 /** Plain words for a distance, so the number is not read as a promise. */
 export const closeness = (distance: number): string => {

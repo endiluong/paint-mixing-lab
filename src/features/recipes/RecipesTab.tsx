@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { ExternalLink, FileUp, FlaskConical, Trash2 } from 'lucide-react'
 import type { MixItem } from '@/features/mixer/bench'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { usePersisted } from '@/hooks/usePersisted'
 import { closeness } from '@/lib/color'
 import { closestPaints, findMixes } from '@/lib/match'
 import { findOwned, parseRecipePage, parseRecipeText, stepRatio, type ImportedRecipe, type PaintRef, type RecipeStep } from '@/lib/recipe'
@@ -31,7 +31,7 @@ const resolve = (ref: PaintRef, paints: Paint[], usable: UsablePaint[]): Resolve
 }
 
 export const RecipesTab = ({ paints, usable, sendToMixer }: Props) => {
-  const [recipes, setRecipes] = useLocalStorage<ImportedRecipe[]>('pml.recipes', [])
+  const [recipes, setRecipes] = usePersisted<ImportedRecipe[]>('pml.recipes', [])
   const [openId, setOpenId] = useState<string | null>(null)
   const [adding, setAdding] = useState(false)
   const [text, setText] = useState('')
@@ -64,7 +64,7 @@ export const RecipesTab = ({ paints, usable, sendToMixer }: Props) => {
     return step.parts.flatMap((p) => (typeof p === 'string' ? [] : [p.ref])).flatMap((key, n) => {
       const r = resolved.get(key)
       const paint = r?.owned && isUsable(r.owned) ? r.owned : (r?.nearest?.paint ?? null)
-      return paint ? [{ code: paint.code, parts: ratio?.[n] || 1 }] : []
+      return paint ? [{ code: paint.id, parts: ratio?.[n] || 1 }] : []
     }).filter((item, n, all) => all.findIndex((x) => x.code === item.code) === n)
   }
 

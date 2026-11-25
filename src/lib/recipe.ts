@@ -111,8 +111,8 @@ export const parseRecipeText = (text: string, paints: Paint[], source = ''): Imp
   const names = [...paints].sort((a, b) => b.name.length - a.name.length)
   const used = new Map<string, PaintRef>()
   const note = (p: Paint): StepPart => {
-    used.set(p.code, { key: p.code, name: p.name, code: p.code, range: `${p.brand} ${p.line}`, hex: p.hex })
-    return { ref: p.code }
+    used.set(p.id, { key: p.id, name: p.name, code: p.code, range: `${p.brand} ${p.line}`, hex: p.hex })
+    return { ref: p.id }
   }
   const scan = (line: string): StepPart[] => {
     const lower = line.toLowerCase()

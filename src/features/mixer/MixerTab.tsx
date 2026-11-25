@@ -1,12 +1,12 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
-import { ChevronDown, ChevronUp, Plus } from 'lucide-react'
+import { ChevronDown, ChevronUp, Pencil, Plus, Trash2 } from 'lucide-react'
 import { applyFilter, EMPTY_FILTER, Filters, type FilterState } from '@/components/Filters'
-import { PaintLabel } from '@/components/PaintLabel'
+import { OwnedMark, PaintPill, PILL_ACTION } from '@/components/PaintPill'
 import { Segmented } from '@/components/Segmented'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
-import { loadLibrary } from '@/lib/library'
+import { usePersisted } from '@/hooks/usePersisted'
+import { loadLibrary, notOwned } from '@/lib/library'
 import { curveOf, layerSteps, mixCurve, mixHex } from '@/lib/paintModel'
-import type { MixPart, UsablePaint } from '@/lib/types'
+import type { MixPart, Paint, UsablePaint } from '@/lib/types'
 import { MAX_LAYERS, MAX_MIX, type BenchMode, type LayerState, type Marker, type MixItem, type SavedSwatch } from './bench'
 import { ColorWheel } from './ColorWheel'
 import { LayerBench } from './LayerBench'
@@ -17,11 +17,18 @@ import { SavedBench } from './SavedBench'
 const ColorSphere = lazy(() => import('./ColorSphere').then((m) => ({ default: m.ColorSphere })))
 
 interface Props {
+  /** Paints of the collection that can be mixed. */
   paints: UsablePaint[]
+  collection: Paint[]
   mixItems: MixItem[]
   setMixItems: (next: MixItem[] | ((prev: MixItem[]) => MixItem[])) => void
   /** Colour sent from another tab to look at on the graph. */
   probe: string | null
+  create: () => void
+  edit: (id: string) => void
+  remove: (id: string) => void
+  /** Adds a paint from the library to the collection. */
+  own: (paint: UsablePaint) => void
 }
 
 type Surround = 'dark' | 'grey' | 'white'
@@ -30,19 +37,19 @@ const SURROUND: Record<Surround, string> = { dark: '#262626', grey: '#777777', w
 type Scope = 'mine' | 'all'
 const PAGE = 200
 
-export const MixerTab = ({ paints: mine, mixItems, setMixItems, probe }: Props) => {
-  const [scope, setScope] = useLocalStorage<Scope>('pml.scope', 'mine')
+export const MixerTab = ({ paints: mine, collection, mixItems, setMixItems, probe, create, edit, remove, own }: Props) => {
+  const [scope, setScope] = usePersisted<Scope>('pml.scope', 'mine')
   const [library, setLibrary] = useState<UsablePaint[]>([])
   const [libraryState, setLibraryState] = useState<'idle' | 'loading' | 'ready' | 'failed'>('idle')
   const [limit, setLimit] = useState(PAGE)
-  const [layer, setLayer] = useLocalStorage<LayerState>('pml.layer', { base: '', layers: [] })
-  const [view, setView] = useLocalStorage<'3d' | '2d'>('pml.view', '3d')
-  const [surround, setSurround] = useLocalStorage<Surround>('pml.surround', 'dark')
+  const [layer, setLayer] = usePersisted<LayerState>('pml.layer', { base: '', layers: [] })
+  const [view, setView] = usePersisted<'3d' | '2d'>('pml.view', '3d')
+  const [surround, setSurround] = usePersisted<Surround>('pml.surround', 'dark')
   const [mode, setMode] = useState<BenchMode>(probe ? 'match' : 'mix')
   const [open, setOpen] = useState(true)
   const [filter, setFilter] = useState<FilterState>(EMPTY_FILTER)
   const [selected, setSelected] = useState<string | null>(null)
-  const [saved, setSaved] = useLocalStorage<SavedSwatch[]>('pml.saved', [])
+  const [saved, setSaved] = usePersisted<SavedSwatch[]>('pml.saved', [])
   const [target, setTarget] = useState(probe ?? '#6B7A3A')
 
   useEffect(() => {
@@ -68,11 +75,12 @@ export const MixerTab = ({ paints: mine, mixItems, setMixItems, probe }: Props) 
     }
   }, [wanted])
 
-  const everything = useMemo(() => [...mine, ...library], [mine, library])
+  const everything = useMemo(() => (libraryState === 'ready' ? [...mine, ...notOwned(library, collection)] : mine), [mine, library, libraryState, collection])
   const paints = scope === 'all' ? everything : mine
   const byCode = useMemo(() => new Map(everything.map((p) => [p.id, p])), [everything])
   const shown = useMemo(() => applyFilter(paints, filter), [paints, filter])
   const listed = shown.slice(0, limit)
+  const chosen = selected ? (byCode.get(selected) ?? null) : null
 
   const mix = useMemo(() => mixItems.flatMap((i) => (byCode.has(i.code) ? [{ paint: byCode.get(i.code) as UsablePaint, parts: i.parts }] : [])), [mixItems, byCode])
   const mixParts = useMemo<MixPart[]>(() => mix.map((i) => ({ hex: i.paint.hex, parts: i.parts, strength: i.paint.strength })), [mix])
@@ -222,21 +230,46 @@ export const MixerTab = ({ paints: mine, mixItems, setMixItems, probe }: Props) 
       <section className="flex min-h-0 min-w-0 flex-col" aria-label="Paints in the graph">
         <div className="border-b border-line p-3">
           <Filters paints={paints} value={filter} onChange={changeFilter} />
+          <div className="mt-2 flex items-center gap-2 text-sm text-dim">
+            <span className="tnum">{shown.length.toLocaleString('en')} {shown.length === 1 ? 'paint' : 'paints'}</span>
+            <span className="ml-2 inline-flex items-center gap-1.5"><OwnedMark ink="#f0f0f0" paper="#111111" /><span aria-hidden>In your paints</span></span>
+            <button type="button" className="btn ml-auto text-text" onClick={create}><Plus size={15} />Add a paint</button>
+          </div>
           {scope === 'all' && libraryState === 'failed' && <p role="alert" className="mt-2 text-sm">The other paints did not load. Reload the page to try again.</p>}
         </div>
-        <ul className="scroll grid flex-1 grid-cols-[minmax(0,1fr)] content-start gap-1.5 overflow-y-auto p-3">
+        <ul className="scroll flex min-h-0 flex-1 flex-wrap content-start gap-2 overflow-y-auto p-3">
           {listed.map((p) => (
-            <li key={p.id} id={`paint-${p.id}`}>
-              <PaintLabel hex={p.hex} metal={p.metal} code={p.code} name={p.name} sub={`${scope === 'all' && p.owned ? 'You own this. ' : ''}${p.brand}, ${p.line}`} selected={p.id === selected} onClick={() => setSelected(p.id === selected ? null : p.id)}>
-                <button type="button" className="shrink-0 px-3 hover:bg-black/10" aria-label={`${addLabel}: ${p.name} ${p.code}`} title={addLabel} disabled={full} onClick={() => add(p.id)}>
-                  <Plus size={18} />
+            <li key={p.id} id={`paint-${p.id}`} className="max-w-full">
+              <PaintPill hex={p.hex} metal={p.metal} code={p.code} name={p.name} owned={p.owned} title={`${p.brand}, ${p.line}, ${p.hex}`} selected={p.id === selected} onClick={() => setSelected(p.id === selected ? null : p.id)}>
+                <button type="button" className={PILL_ACTION} aria-label={`${addLabel}: ${p.name} ${p.code}`} title={addLabel} disabled={full} onClick={() => add(p.id)}>
+                  <Plus size={16} />
                 </button>
-              </PaintLabel>
+              </PaintPill>
             </li>
           ))}
-          {shown.length > listed.length && <li><button type="button" className="btn w-full" onClick={() => setLimit(limit + PAGE * 2)}>Show more, {(shown.length - listed.length).toLocaleString('en')} left</button></li>}
-          {shown.length === 0 && <li className="p-4 text-dim">No paint matches these filters. Clear them to see all {paints.length}.</li>}
+          {shown.length > listed.length && <li className="w-full"><button type="button" className="btn w-full" onClick={() => setLimit(limit + PAGE * 2)}>Show more, {(shown.length - listed.length).toLocaleString('en')} left</button></li>}
+          {shown.length === 0 && <li className="w-full p-4 text-dim">{paints.length === 0 ? 'No paints yet. Press Add a paint, or bring back the built-in paints in the Inventory.' : `No paint matches these filters. Clear them to see all ${paints.length}.`}</li>}
         </ul>
+        {chosen && (
+          <div className="sticky bottom-0 border-t border-line bg-panel p-3" aria-label="Selected paint" role="group">
+            <div className="flex items-center gap-3">
+              <span className="h-10 w-10 shrink-0 rounded-[8px] ring-1 ring-inset ring-white/20" style={{ background: chosen.hex }} />
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-semibold">{chosen.name} <span className="font-code">{chosen.code}</span></p>
+                <p className="truncate text-sm text-dim">{chosen.owned ? 'In your paints' : 'Not in your paints'}. {chosen.brand}, {chosen.line}, <span className="tnum">{chosen.hex}</span></p>
+              </div>
+            </div>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <button type="button" className={chosen.owned ? 'btn-main' : 'btn'} disabled={full} onClick={() => add(chosen.id)}>{addLabel}</button>
+              {chosen.owned ? (
+                <>
+                  <button type="button" className="btn" onClick={() => edit(chosen.id)}><Pencil size={15} />Edit</button>
+                  <button type="button" className="btn" onClick={() => remove(chosen.id)}><Trash2 size={15} />Remove</button>
+                </>
+              ) : <button type="button" className="btn-main" onClick={() => own(chosen)}><Plus size={15} />Add to my paints</button>}
+            </div>
+          </div>
+        )}
       </section>
     </div>
   )

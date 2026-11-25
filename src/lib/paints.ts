@@ -2,7 +2,7 @@ import openData from '@/data/paints.json'
 import squidmarData from '@/data/squidmar.json'
 import tmmData from '@/data/tmm.json'
 import { hexToLab, isHex, labDistance } from './color'
-import type { MetalSwatch, Paint, PaintOverride, PaintRecord, UsablePaint } from './types'
+import type { MetalSwatch, Paint, PaintOverride, PaintRecord, StoredPaint, UsablePaint } from './types'
 
 /** Optional file: without it every paint falls back to the open dataset. */
 const padFiles = import.meta.glob<Record<string, string>>('@/data/paintpad-hex.json', { eager: true, import: 'default' })
@@ -12,14 +12,19 @@ export const TMM = tmmData as MetalSwatch[]
 export const SQUIDMAR = squidmarData as { code: string; name: string; set: string; hex: string; metal: MetalSwatch | null }[]
 const tmmByCode = new Map(TMM.map((m) => [m.code, m]))
 
-export const RECORDS = openData as PaintRecord[]
+const RECORDS = openData as PaintRecord[]
 
-const build = (record: PaintRecord, override: PaintOverride): Paint => {
-  const metal = tmmByCode.get(record.code) ?? null
+/** The built-in inventory, written to IndexedDB on the first visit. */
+export const STARTER: StoredPaint[] = RECORDS.map((r) => ({ ...r, id: r.code, origin: 'starter', hexFrom: null, mine: {}, addedAt: '' }))
+
+export const buildPaint = (record: StoredPaint, owned = true): Paint => {
+  const { mine: override, hexFrom } = record
+  const metal = record.brand === 'Vallejo' ? (tmmByCode.get(record.code) ?? null) : null
+  const pad = record.origin === 'starter' ? (padHex[record.code] ?? null) : null
   const sources = [
     { hex: metal?.body ?? null, source: 'Vallejo TMM chart' },
-    { hex: padHex[record.code] ?? null, source: 'Paint Pad' },
-    { hex: record.openHex, source: 'miniature-paints dataset' },
+    { hex: pad, source: 'Paint Pad' },
+    { hex: record.openHex, source: hexFrom ?? 'miniature-paints dataset' },
     { hex: record.wikiHex, source: 'Hobby-Paints-Wiki' },
   ].filter((s): s is { hex: string; source: string } => s.hex !== null && isHex(s.hex))
   const mine = override.hex && isHex(override.hex) ? { hex: override.hex.toUpperCase(), source: 'Yours' } : null
@@ -28,8 +33,7 @@ const build = (record: PaintRecord, override: PaintOverride): Paint => {
   const lab = chosen ? hexToLab(chosen.hex) : null
   return {
     ...record,
-    id: record.code,
-    owned: true,
+    owned,
     metal: mine ? null : metal,
     hex: chosen?.hex ?? null,
     hexSource: chosen?.source ?? 'none',
@@ -42,6 +46,7 @@ const build = (record: PaintRecord, override: PaintOverride): Paint => {
   }
 }
 
-export const buildPaints = (overrides: Record<string, PaintOverride>): Paint[] => RECORDS.map((r) => build(r, overrides[r.code] ?? {}))
+/** The built-in inventory with the given changes. */
+export const buildPaints = (overrides: Record<string, PaintOverride>): Paint[] => STARTER.map((r) => buildPaint({ ...r, mine: overrides[r.code] ?? {} }))
 
 export const isUsable = (p: Paint): p is UsablePaint => p.inMixer && p.hex !== null
